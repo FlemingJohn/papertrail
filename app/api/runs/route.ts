@@ -1,6 +1,7 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { runDepthSchema, runDepthSettings } from "@/lib/schemas/run";
 import { executeRun } from "@/lib/runs/execute-run";
+import { persistRun } from "@/lib/runs/persist-run";
 import { encodeFrame } from "@/lib/runs/stream-protocol";
 
 export const runtime = "nodejs";
@@ -55,9 +56,12 @@ export async function POST(request: Request): Promise<Response> {
   const settings = runDepthSettings[depthResult.data];
 
   let base64Source: string;
+  let contentFingerprint: string;
 
   try {
-    base64Source = Buffer.from(await file.arrayBuffer()).toString("base64");
+    const bytes = Buffer.from(await file.arrayBuffer());
+    base64Source = bytes.toString("base64");
+    contentFingerprint = createHash("sha256").update(bytes).digest("hex");
   } catch {
     return respondWithError(400, "The PDF could not be decoded.");
   }
@@ -82,6 +86,42 @@ export async function POST(request: Request): Promise<Response> {
 
         for await (const frame of iterator) {
           controller.enqueue(encoder.encode(encodeFrame(frame)));
+
+          if (frame.report === null) {
+            continue;
+          }
+
+          const stored = await persistRun({
+            contentFingerprint,
+            depth: depthResult.data,
+            report: frame.report,
+          });
+
+          controller.enqueue(
+            encoder.encode(
+              encodeFrame(
+                stored.successful
+                  ? {
+                      event: {
+                        type: "run-stored",
+                        documentId: stored.value.documentId,
+                        reportId: stored.value.reportId,
+                        isFirstReport: stored.value.isFirstReport,
+                      },
+                      report: null,
+                    }
+                  : {
+                      event: {
+                        type: "activity",
+                        level: "warning",
+                        message: "The report was not saved",
+                        detail: `${stored.failure.message} The findings above are complete, but this paper cannot be watched for changes until storage works.`,
+                      },
+                      report: null,
+                    }
+              )
+            )
+          );
         }
       } catch (error) {
         controller.enqueue(
