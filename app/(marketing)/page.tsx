@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/marketing/navbar";
 import { Hero } from "@/components/marketing/hero";
 import { About } from "@/components/marketing/about";
-import { Works } from "@/components/marketing/works";
+import { Checks } from "@/components/marketing/checks";
 import { TechMarquee } from "@/components/marketing/tech-marquee";
 import { Footer } from "@/components/marketing/footer";
 import { CustomCursor } from "@/components/marketing/custom-cursor";
@@ -17,7 +17,7 @@ export default function LandingPage() {
         <Hero />
         <SectionBlend />
         <About />
-        <Works />
+        <Checks />
         <TechMarquee />
         <Footer />
       </main>
