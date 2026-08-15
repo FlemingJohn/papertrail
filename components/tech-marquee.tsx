@@ -52,11 +52,11 @@ function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.color = "white"
-              e.currentTarget.style.WebkitTextStroke = "none"
+              e.currentTarget.style.webkitTextStroke = "none"
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = "transparent"
-              e.currentTarget.style.WebkitTextStroke = "1px rgba(255,255,255,0.3)"
+              e.currentTarget.style.webkitTextStroke = "1px rgba(255,255,255,0.3)"
             }}
           >
             {item}
