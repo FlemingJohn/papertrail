@@ -1,98 +1,112 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
-import { ArrowUpRight } from "lucide-react"
+
+const evidenceSources = [
+  { label: "OpenAlex", href: "https://openalex.org" },
+  { label: "Crossref", href: "https://www.crossref.org" },
+  { label: "Europe PMC", href: "https://europepmc.org" },
+]
 
 export function Footer() {
-  const [time, setTime] = useState("")
-  const [isHovered, setIsHovered] = useState(false)
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date()
-      const hours = now.getHours().toString().padStart(2, "0")
-      const minutes = now.getMinutes().toString().padStart(2, "0")
-      const seconds = now.getSeconds().toString().padStart(2, "0")
-      const milliseconds = now.getMilliseconds().toString().padStart(3, "0")
-      setTime(`${hours}:${minutes}:${seconds}.${milliseconds}`)
-    }
-
-    updateTime()
-    const interval = setInterval(updateTime, 10)
-    return () => clearInterval(interval)
-  }, [])
-
   return (
-    <footer className="relative">
-      {/* Main CTA */}
-      <motion.a
-        href="mailto:hello@example.com"
-        data-cursor-hover
-        className="relative block overflow-hidden"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+    <footer className="relative border-t border-white/10 px-8 md:px-12 py-20 md:py-24">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="mb-16"
       >
-        {/* Background Curtain */}
-        <motion.div
-          className="absolute inset-0 bg-[#2563eb]"
-          initial={{ y: "100%" }}
-          animate={{ y: isHovered ? "0%" : "100%" }}
-          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        />
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-6">06 — START</p>
 
-        {/* Content */}
-        <div className="relative py-16 md:py-24 px-8 md:px-12 border-t border-white/10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <motion.h2
-              className="font-sans text-4xl md:text-6xl lg:text-8xl font-light tracking-tight text-center md:text-left"
-              animate={{
-                color: isHovered ? "#050505" : "#fafafa",
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              Let's <span className="italic">Collaborate</span>
-            </motion.h2>
+        <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-light tracking-tight mb-8 text-balance">
+          Check a paper you
+          <br />
+          <span className="italic">are about to cite.</span>
+        </h2>
 
-            <motion.div
-              animate={{
-                rotate: isHovered ? 45 : 0,
-                color: isHovered ? "#050505" : "#fafafa",
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              <ArrowUpRight className="w-12 h-12 md:w-16 md:h-16" />
-            </motion.div>
-          </div>
-        </div>
-      </motion.a>
+        <Link
+          href="/check"
+          data-cursor-hover
+          className="inline-block font-mono text-sm tracking-widest uppercase border border-white/20 rounded-full px-8 py-4 hover:bg-white hover:text-black transition-colors duration-500"
+        >
+          Check a paper
+        </Link>
+      </motion.div>
 
-      {/* Footer Info */}
-      <div className="px-8 md:px-12 py-8 border-t border-white/10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Local Time */}
-          <div className="font-mono text-xs tracking-widest text-muted-foreground">
-            <span className="mr-2">LOCAL TIME</span>
-            <span className="text-white tabular-nums">{time}</span>
-          </div>
-
-          {/* Links */}
-          <div className="flex gap-8">
-            {["LinkedIn", "GitHub", "Twitter"].map((link) => (
-              <a
-                key={link}
-                href="#"
-                data-cursor-hover
-                className="font-mono text-xs tracking-widest text-muted-foreground hover:text-white transition-colors duration-300"
-              >
-                {link}
-              </a>
+      <div className="grid gap-10 md:grid-cols-3 border-t border-white/10 pt-10">
+        <div>
+          <p className="font-mono text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">Evidence from</p>
+          <ul className="space-y-2">
+            {evidenceSources.map((source) => (
+              <li key={source.label}>
+                <a
+                  href={source.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cursor-hover
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {source.label}
+                </a>
+              </li>
             ))}
-          </div>
-
-          {/* Copyright */}
-          <p className="font-mono text-xs tracking-widest text-muted-foreground">© {new Date().getFullYear()}</p>
+          </ul>
         </div>
+
+        <div>
+          <p className="font-mono text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">The tool</p>
+          <ul className="space-y-2">
+            <li>
+              <Link
+                href="/check"
+                data-cursor-hover
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Check a paper
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/watchlist"
+                data-cursor-hover
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Watchlist
+              </Link>
+            </li>
+            <li>
+              <a
+                href="https://github.com/FlemingJohn/papertrail"
+                target="_blank"
+                rel="noreferrer"
+                data-cursor-hover
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Source and documentation
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <p className="font-mono text-xs tracking-[0.2em] uppercase text-muted-foreground mb-4">Honest limits</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Roughly half of cited sources sit behind a paywall. Those come back marked unverified rather than wrong.
+            Every report says what it could not cover.
+          </p>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 mt-10 pt-6 flex flex-wrap items-center justify-between gap-3">
+        <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+          PaperTrail — every claim, traced
+        </p>
+        <p className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+          Built for the Research Agents Hack, IIT Madras
+        </p>
       </div>
     </footer>
   )
