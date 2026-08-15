@@ -16,6 +16,12 @@ export function getDatabase(): DatabaseClient {
 
   const environment = getServerEnvironment();
 
+  if (environment.DATABASE_URL === undefined) {
+    throw new Error(
+      "DATABASE_URL is not set, so reports cannot be stored and papers cannot be watched. Checking a paper still works."
+    );
+  }
+
   cachedConnection = postgres(environment.DATABASE_URL, {
     max: 3,
     idle_timeout: 20,
