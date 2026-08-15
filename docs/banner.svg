@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-label="PaperTrail — every claim, traced">
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#121212"/>
+      <stop offset="60%" stop-color="#0d0d0d"/>
+      <stop offset="100%" stop-color="#161616"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.9"/>
+      <stop offset="55%" stop-color="#2563eb" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <path d="M34 0H0v34" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="340" fill="url(#ground)"/>
+  <rect width="1200" height="340" fill="url(#grid)"/>
+  <rect x="0" y="338" width="1200" height="2" fill="url(#rule)"/>
+
+  <g transform="translate(72 96)">
+    <g transform="scale(2.6)" fill="none" stroke="#f2f2f2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 3.5h9l5.5 5.5v16a2.5 2.5 0 0 1-2.5 2.5H9a2.5 2.5 0 0 1-2.5-2.5v-19A2.5 2.5 0 0 1 9 3.5Z" fill="#f2f2f2" fill-opacity="0.08"/>
+      <path d="M18 3.5V9h5.5"/>
+      <path d="M10.5 13.5h9M10.5 17h6" stroke-opacity="0.5"/>
+      <path d="M10.5 20.5h4c3.4 0 5.2 2.4 5.2 5" stroke="#2563eb"/>
+      <circle cx="19.7" cy="25.5" r="1.9" fill="#2563eb" stroke="none"/>
+    </g>
+  </g>
+
+  <text x="186" y="150" font-family="Georgia, 'Times New Roman', serif" font-size="72" fill="#f5f5f5" letter-spacing="-1">PaperTrail</text>
+  <text x="190" y="196" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-style="italic" fill="#9a9a9a">Every claim, traced.</text>
+
+  <text x="190" y="250" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="12.5" fill="#6e6e6e" letter-spacing="3.4">24 AGENTS · 18 TOOLS · 1 MCP SERVER · 3 OPEN DATA SOURCES</text>
+
+  <g font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="12" letter-spacing="1.4">
+    <g transform="translate(742 92)">
+      <rect width="164" height="30" rx="15" fill="none" stroke="#4ade80" stroke-opacity="0.45"/>
+      <text x="82" y="20" fill="#4ade80" text-anchor="middle">SUPPORTED</text>
+    </g>
+    <g transform="translate(922 92)">
+      <rect width="186" height="30" rx="15" fill="none" stroke="#e3b341" stroke-opacity="0.45"/>
+      <text x="93" y="20" fill="#e3b341" text-anchor="middle">WRONG SOURCE</text>
+    </g>
+    <g transform="translate(742 136)">
+      <rect width="204" height="30" rx="15" fill="none" stroke="#a78bfa" stroke-opacity="0.45"/>
+      <text x="102" y="20" fill="#a78bfa" text-anchor="middle">INDIRECT SOURCE</text>
+    </g>
+    <g transform="translate(962 136)">
+      <rect width="146" height="30" rx="15" fill="none" stroke="#f87171" stroke-opacity="0.5"/>
+      <text x="73" y="20" fill="#f87171" text-anchor="middle">RETRACTED</text>
+    </g>
+    <g transform="translate(742 180)">
+      <rect width="196" height="30" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.22"/>
+      <text x="98" y="20" fill="#8a8a8a" text-anchor="middle">COULD NOT CHECK</text>
+    </g>
+    <g transform="translate(954 180)">
+      <rect width="154" height="30" rx="15" fill="none" stroke="#fb923c" stroke-opacity="0.45"/>
+      <text x="77" y="20" fill="#fb923c" text-anchor="middle">UNSUPPORTED</text>
+    </g>
+  </g>
+
+  <text x="742" y="250" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="11.5" fill="#5c5c5c" letter-spacing="2">THE VERDICTS A RESEARCHER ACTUALLY GETS BACK</text>
+</svg>
