@@ -66,6 +66,13 @@ export interface RunFinishedEvent {
   durationMilliseconds: number;
 }
 
+export interface RunStoredEvent {
+  type: "run-stored";
+  documentId: string;
+  reportId: string;
+  isFirstReport: boolean;
+}
+
 export interface RunFailedEvent {
   type: "run-failed";
   runIdentifier: string;
@@ -82,6 +89,7 @@ export type RunEvent =
   | ActivityEvent
   | SpendUpdatedEvent
   | RunFinishedEvent
+  | RunStoredEvent
   | RunFailedEvent;
 
 export type RunEventType = RunEvent["type"];
