@@ -1,7 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useRunStream } from "@/lib/client/use-run-stream";
 import { formatDollars } from "@/lib/config/pricing";
+import { displayMedium, microLabel, sectionLabel } from "@/lib/design/tokens";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { ErrorBoundary } from "@/components/dashboard/error-boundary";
 import { ProblemIcon } from "@/components/dashboard/icons";
@@ -17,20 +19,26 @@ export default function CheckPage() {
 
   return (
     <ErrorBoundary>
-      <div className="space-y-8">
-        <header>
-          <h1 className="font-display text-3xl text-foreground">
-            Check a paper
+      <div className="mx-auto max-w-6xl">
+        <motion.header
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-16"
+        >
+          <p className={`${sectionLabel} mb-4`}>Check a paper</p>
+          <h1 className={displayMedium}>
+            Twenty-four specialists, one paper.
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Twenty-four specialists read the paper, check every citation
-            against its source, read the numbers twice over, and tell you what
-            they could not verify.
+          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Every citation is read back to its source, every number is
+            extracted twice over, and anything that could not be verified is
+            said out loud rather than quietly assumed.
           </p>
-        </header>
+        </motion.header>
 
-        <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
-          <div className="space-y-6">
+        <div className="grid gap-x-12 gap-y-16 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+          <div className="space-y-16">
             <UploadPanel
               isRunning={isRunning}
               onStart={(file, depth) => {
@@ -40,10 +48,10 @@ export default function CheckPage() {
             />
 
             {state.status === "idle" ? null : (
-              <section className="border border-border/60 bg-card/40 p-5">
-                <div className="mb-4 flex items-baseline justify-between">
-                  <h2 className="text-sm text-foreground">Progress</h2>
-                  <span className="font-mono text-xs text-muted-foreground">
+              <section className="border-t border-white/10 pt-8">
+                <div className="mb-6 flex items-baseline justify-between">
+                  <p className={sectionLabel}>03 — Progress</p>
+                  <span className="font-display text-xl font-light">
                     {formatDollars(state.spendDollars)}
                   </span>
                 </div>
@@ -53,22 +61,22 @@ export default function CheckPage() {
                   isRunning={isRunning}
                 />
 
-                <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-border/40 pt-4">
+                <dl className="mt-8 grid grid-cols-3 gap-6">
                   <div>
-                    <dt className="text-xs text-muted-foreground">Working</dt>
-                    <dd className="font-mono text-sm text-foreground">
+                    <dt className={microLabel}>Working</dt>
+                    <dd className="mt-1 font-display text-2xl font-light">
                       {state.activeAgentCount}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-muted-foreground">Lookups</dt>
-                    <dd className="font-mono text-sm text-foreground">
+                    <dt className={microLabel}>Lookups</dt>
+                    <dd className="mt-1 font-display text-2xl font-light">
                       {state.toolUses}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-xs text-muted-foreground">Tokens</dt>
-                    <dd className="font-mono text-sm text-foreground">
+                    <dt className={microLabel}>Tokens</dt>
+                    <dd className="mt-1 font-display text-2xl font-light">
                       {formatCount(state.tokensIn + state.tokensOut)}
                     </dd>
                   </div>
@@ -77,29 +85,27 @@ export default function CheckPage() {
             )}
 
             {state.activity.length === 0 ? null : (
-              <section className="border border-border/60 bg-card/40">
-                <h2 className="border-b border-border/60 px-4 py-3 text-sm">
-                  What happened
-                </h2>
-                <div className="max-h-80 overflow-y-auto">
+              <section className="border-t border-white/10 pt-8">
+                <p className={`${sectionLabel} mb-6`}>04 — What happened</p>
+                <div className="max-h-96 overflow-y-auto pr-1">
                   <ActivityFeed lines={state.activity} />
                 </div>
               </section>
             )}
           </div>
 
-          <div className="min-h-[32rem] space-y-6">
+          <div className="min-h-[34rem] space-y-16">
             {state.errorMessage === null ? null : (
               <div
                 role="alert"
-                className="flex gap-3 border border-verdict-retracted/40 bg-card/40 p-4"
+                className="flex gap-4 border-t border-verdict-retracted/40 pt-8"
               >
                 <ProblemIcon className="size-5 shrink-0 text-verdict-retracted" />
                 <div>
-                  <p className="text-sm text-foreground">
+                  <p className="font-display text-xl font-light">
                     The check could not finish
                   </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {state.errorMessage}
                   </p>
                 </div>
@@ -107,7 +113,7 @@ export default function CheckPage() {
             )}
 
             {state.report === null ? (
-              <div className="h-[32rem]">
+              <div className="h-[34rem]">
                 <LiveReasoning agents={state.agents} />
               </div>
             ) : (
