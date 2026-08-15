@@ -1,44 +1,46 @@
-import type { CitationVerdict, ConfidenceLevel, SeverityLevel } from "@/lib/schemas/verdict";
+import type {
+  CitationVerdict,
+  ConfidenceLevel,
+  SeverityLevel,
+} from "@/lib/schemas/verdict";
 import {
   citationVerdictLabels,
   confidenceLevelLabels,
   severityLabels,
 } from "@/lib/config/labels";
+import { pill } from "@/lib/design/tokens";
 
 const verdictColours: Record<CitationVerdict, string> = {
-  supported: "text-verdict-supported border-verdict-supported/40",
+  supported: "text-verdict-supported border-verdict-supported/50",
   "partly-supported":
-    "text-verdict-partly-supported border-verdict-partly-supported/40",
+    "text-verdict-partly-supported border-verdict-partly-supported/50",
   "indirect-source":
-    "text-verdict-indirect-source border-verdict-indirect-source/40",
-  "wrong-source": "text-verdict-wrong-source border-verdict-wrong-source/40",
-  "not-supported": "text-verdict-not-supported border-verdict-not-supported/40",
-  retracted: "text-verdict-retracted border-verdict-retracted/50",
+    "text-verdict-indirect-source border-verdict-indirect-source/50",
+  "wrong-source": "text-verdict-wrong-source border-verdict-wrong-source/50",
+  "not-supported": "text-verdict-not-supported border-verdict-not-supported/50",
+  retracted: "text-verdict-retracted border-verdict-retracted/60",
   "source-not-found":
-    "text-verdict-source-not-found border-verdict-source-not-found/40",
+    "text-verdict-source-not-found border-verdict-source-not-found/50",
   "could-not-check":
-    "text-verdict-could-not-check border-verdict-could-not-check/40",
+    "text-verdict-could-not-check border-verdict-could-not-check/50",
 };
 
 const confidenceColours: Record<ConfidenceLevel, string> = {
-  high: "text-confidence-high border-confidence-high/40",
-  moderate: "text-confidence-moderate border-confidence-moderate/40",
-  low: "text-confidence-low border-confidence-low/40",
-  "very-low": "text-confidence-very-low border-confidence-very-low/50",
+  high: "text-confidence-high border-confidence-high/50",
+  moderate: "text-confidence-moderate border-confidence-moderate/50",
+  low: "text-confidence-low border-confidence-low/50",
+  "very-low": "text-confidence-very-low border-confidence-very-low/60",
 };
 
 const severityColours: Record<SeverityLevel, string> = {
-  critical: "text-severity-critical border-severity-critical/50",
-  major: "text-severity-major border-severity-major/40",
-  minor: "text-severity-minor border-severity-minor/40",
+  critical: "text-severity-critical border-severity-critical/60",
+  major: "text-severity-major border-severity-major/50",
+  minor: "text-severity-minor border-severity-minor/50",
 };
-
-const badgeBase =
-  "inline-flex items-center border px-2 py-0.5 text-xs whitespace-nowrap";
 
 export function VerdictBadge({ verdict }: { verdict: CitationVerdict }) {
   return (
-    <span className={`${badgeBase} ${verdictColours[verdict]}`}>
+    <span className={`${pill} ${verdictColours[verdict]}`}>
       {citationVerdictLabels[verdict]}
     </span>
   );
@@ -46,7 +48,7 @@ export function VerdictBadge({ verdict }: { verdict: CitationVerdict }) {
 
 export function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
   return (
-    <span className={`${badgeBase} ${confidenceColours[level]}`}>
+    <span className={`${pill} ${confidenceColours[level]}`}>
       {confidenceLevelLabels[level]}
     </span>
   );
@@ -54,8 +56,16 @@ export function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
 
 export function SeverityBadge({ severity }: { severity: SeverityLevel }) {
   return (
-    <span className={`${badgeBase} ${severityColours[severity]}`}>
+    <span className={`${pill} ${severityColours[severity]}`}>
       {severityLabels[severity]}
+    </span>
+  );
+}
+
+export function NeutralPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className={`${pill} border-white/20 text-muted-foreground`}>
+      {children}
     </span>
   );
 }
