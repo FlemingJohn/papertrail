@@ -7,9 +7,9 @@ const serverEnvironmentSchema = z.object({
   AZURE_OPENAI_DEPLOYMENT: z.string().min(1),
   AZURE_DOCUMENT_ENDPOINT: z.url(),
   AZURE_DOCUMENT_KEY: z.string().min(1),
-  SUPABASE_URL: z.url(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  DATABASE_URL: z.string().min(1),
+  SUPABASE_URL: z.url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  DATABASE_URL: z.string().min(1).optional(),
   OPENALEX_CONTACT_EMAIL: z.email(),
 });
 
