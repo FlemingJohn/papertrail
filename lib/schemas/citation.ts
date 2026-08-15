@@ -27,6 +27,14 @@ export const resolvedSourceSchema = z.object({
 
 export type ResolvedSource = z.infer<typeof resolvedSourceSchema>;
 
+export const sourceLookupResultSchema = z.object({
+  wasFound: z.boolean(),
+  source: resolvedSourceSchema.nullable(),
+  note: z.string().max(300),
+});
+
+export type SourceLookupResult = z.infer<typeof sourceLookupResultSchema>;
+
 export const argumentSchema = z.object({
   position: z.string().max(600),
   quotedEvidence: z.string().nullable(),
