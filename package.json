@@ -10,7 +10,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "database:generate": "drizzle-kit generate",
     "database:push": "drizzle-kit push",
