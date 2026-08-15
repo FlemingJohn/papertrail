@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { RunStage } from "@/lib/schemas/run";
 import { orderedRunStages, runStageLabels } from "@/lib/config/labels";
 import { CheckIcon, PendingIcon, SpinnerIcon } from "./icons";
@@ -17,34 +18,40 @@ export function PipelineProgress({
     currentStage === null ? -1 : orderedRunStages.indexOf(currentStage);
 
   return (
-    <ol className="space-y-0.5">
+    <ol>
       {orderedRunStages.map((stage, index) => {
         const isDone = index < currentIndex;
         const isActive = index === currentIndex && isRunning;
         const isComplete = index <= currentIndex && !isRunning;
+        const number = String(index + 1).padStart(2, "0");
 
         return (
-          <li
+          <motion.li
             key={stage}
-            className="flex items-center gap-2.5 py-1.5 text-sm"
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.03 }}
+            className="flex items-center gap-3 border-b border-white/10 py-3 last:border-b-0"
             aria-current={isActive ? "step" : undefined}
           >
-            <StageMark
-              isDone={isDone || isComplete}
-              isActive={isActive}
-            />
+            <span className="font-mono text-[10px] tracking-widest text-muted-foreground">
+              {number}
+            </span>
+
+            <StageMark isDone={isDone || isComplete} isActive={isActive} />
+
             <span
-              className={
+              className={`text-sm ${
                 isDone || isComplete
                   ? "text-foreground"
                   : isActive
                     ? "text-accent"
-                    : "text-muted-foreground/60"
-              }
+                    : "text-muted-foreground/50"
+              }`}
             >
               {runStageLabels[stage]}
             </span>
-          </li>
+          </motion.li>
         );
       })}
     </ol>
@@ -66,5 +73,5 @@ function StageMark({
     return <CheckIcon className="size-4 shrink-0 text-verdict-supported" />;
   }
 
-  return <PendingIcon className="size-4 shrink-0 text-muted-foreground/40" />;
+  return <PendingIcon className="size-4 shrink-0 text-muted-foreground/30" />;
 }
