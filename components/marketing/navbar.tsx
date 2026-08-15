@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
+import { Logo } from "@/components/logo"
 
 const sections = [
   { label: "How it works", target: "#how-it-works" },
@@ -20,8 +21,8 @@ export function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 px-8 md:px-12 py-6"
     >
       <nav className="flex items-center justify-between">
-        <Link href="/" data-cursor-hover className="font-mono text-xs tracking-[0.3em] uppercase">
-          PaperTrail
+        <Link href="/" data-cursor-hover className="text-foreground">
+          <Logo />
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
