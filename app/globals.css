@@ -38,6 +38,24 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  --verdict-supported: oklch(0.72 0.17 152);
+  --verdict-partly-supported: oklch(0.75 0.14 180);
+  --verdict-indirect-source: oklch(0.7 0.18 300);
+  --verdict-wrong-source: oklch(0.78 0.16 78);
+  --verdict-not-supported: oklch(0.68 0.2 32);
+  --verdict-retracted: oklch(0.63 0.24 25);
+  --verdict-source-not-found: oklch(0.68 0.2 32);
+  --verdict-could-not-check: oklch(0.6 0 0);
+
+  --confidence-high: oklch(0.72 0.17 152);
+  --confidence-moderate: oklch(0.78 0.16 78);
+  --confidence-low: oklch(0.68 0.2 32);
+  --confidence-very-low: oklch(0.63 0.24 25);
+
+  --severity-critical: oklch(0.63 0.24 25);
+  --severity-major: oklch(0.78 0.16 78);
+  --severity-minor: oklch(0.6 0 0);
 }
 
 .dark {
@@ -53,7 +71,7 @@
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.546 0.245 262.881);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
@@ -76,8 +94,24 @@
 }
 
 @theme inline {
-  --font-sans: "Playfair Display", "Georgia", serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
+  --font-display: var(--font-playfair), "Georgia", serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", monospace;
+  --color-verdict-supported: var(--verdict-supported);
+  --color-verdict-partly-supported: var(--verdict-partly-supported);
+  --color-verdict-indirect-source: var(--verdict-indirect-source);
+  --color-verdict-wrong-source: var(--verdict-wrong-source);
+  --color-verdict-not-supported: var(--verdict-not-supported);
+  --color-verdict-retracted: var(--verdict-retracted);
+  --color-verdict-source-not-found: var(--verdict-source-not-found);
+  --color-verdict-could-not-check: var(--verdict-could-not-check);
+  --color-confidence-high: var(--confidence-high);
+  --color-confidence-moderate: var(--confidence-moderate);
+  --color-confidence-low: var(--confidence-low);
+  --color-confidence-very-low: var(--confidence-very-low);
+  --color-severity-critical: var(--severity-critical);
+  --color-severity-major: var(--severity-major);
+  --color-severity-minor: var(--severity-minor);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
