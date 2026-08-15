@@ -1,7 +1,9 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useId, useState } from "react";
+import { motion } from "framer-motion";
 import type { RunDepth } from "@/lib/schemas/run";
+import { buttonPrimary, buttonQuiet, sectionLabel } from "@/lib/design/tokens";
 import { DocumentIcon, UploadIcon } from "./icons";
 
 interface UploadPanelProps {
@@ -15,9 +17,9 @@ const depthOptions: Array<{
   label: string;
   detail: string;
 }> = [
-  { value: "quick", label: "Quick", detail: "The paper on its own" },
-  { value: "standard", label: "Standard", detail: "Plus 5 related papers" },
-  { value: "deep", label: "Deep", detail: "Plus 10 related papers" },
+  { value: "quick", label: "Quick", detail: "the paper alone" },
+  { value: "standard", label: "Standard", detail: "plus 5 papers" },
+  { value: "deep", label: "Deep", detail: "plus 10 papers" },
 ];
 
 const maximumFileBytes = 20 * 1024 * 1024;
@@ -28,7 +30,6 @@ export function UploadPanel({
   onCancel,
 }: UploadPanelProps) {
   const inputId = useId();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [depth, setDepth] = useState<RunDepth>("standard");
   const [isDragging, setIsDragging] = useState(false);
@@ -54,7 +55,9 @@ export function UploadPanel({
   }, []);
 
   return (
-    <section className="border border-border/60 bg-card/40 p-6">
+    <section className="border-t border-white/10 pt-8">
+      <p className={`${sectionLabel} mb-6`}>01 — The paper</p>
+
       <div
         onDragOver={(event) => {
           event.preventDefault();
@@ -66,34 +69,30 @@ export function UploadPanel({
           setIsDragging(false);
           acceptFile(event.dataTransfer.files[0]);
         }}
-        className={`flex flex-col items-center justify-center border border-dashed px-6 py-10 transition-colors ${
-          isDragging ? "border-accent bg-accent/5" : "border-border"
+        className={`flex flex-col items-center justify-center border border-dashed py-14 transition-colors ${
+          isDragging ? "border-accent bg-accent/5" : "border-white/15"
         }`}
       >
         {file === null ? (
-          <UploadIcon className="mb-3 size-7 text-muted-foreground" />
+          <UploadIcon className="mb-4 size-7 text-muted-foreground" />
         ) : (
-          <DocumentIcon className="mb-3 size-7 text-accent" />
+          <DocumentIcon className="mb-4 size-7 text-accent" />
         )}
 
-        <p className="mb-1 text-sm text-foreground">
+        <p className="mb-1 font-display text-xl font-light">
           {file === null ? "Drop a PDF here" : file.name}
         </p>
-        <p className="mb-4 text-xs text-muted-foreground">
+        <p className="mb-6 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           {file === null
             ? "or choose a file to check"
             : `${(file.size / 1024 / 1024).toFixed(1)} MB`}
         </p>
 
-        <label
-          htmlFor={inputId}
-          className="cursor-pointer border border-border px-3 py-1.5 text-xs text-foreground transition-colors hover:border-accent hover:text-accent"
-        >
-          {file === null ? "Choose file" : "Choose a different file"}
+        <label htmlFor={inputId} className={`${buttonQuiet} cursor-pointer`}>
+          {file === null ? "Choose file" : "Choose another"}
         </label>
         <input
           id={inputId}
-          ref={inputRef}
           type="file"
           accept="application/pdf"
           className="sr-only"
@@ -104,31 +103,29 @@ export function UploadPanel({
       {problem === null ? null : (
         <p
           role="alert"
-          className="mt-3 border border-verdict-retracted/40 px-3 py-2 text-xs text-verdict-retracted"
+          className="mt-4 border border-verdict-retracted/40 px-4 py-3 text-sm text-verdict-retracted"
         >
           {problem}
         </p>
       )}
 
-      <fieldset className="mt-5">
-        <legend className="mb-2 text-xs tracking-wide uppercase text-muted-foreground">
-          How deep
-        </legend>
-        <div className="grid grid-cols-3 gap-2">
+      <fieldset className="mt-8">
+        <legend className={`${sectionLabel} mb-4`}>02 — How deep</legend>
+        <div className="flex flex-wrap gap-2">
           {depthOptions.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => setDepth(option.value)}
               aria-pressed={depth === option.value}
-              className={`border px-3 py-2.5 text-left transition-colors ${
+              className={`rounded-full border px-5 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors duration-300 ${
                 depth === option.value
-                  ? "border-accent text-foreground"
-                  : "border-border text-muted-foreground hover:border-border/80"
+                  ? "border-white/60 text-foreground"
+                  : "border-white/20 text-muted-foreground hover:border-white/40"
               }`}
             >
-              <span className="block text-sm">{option.label}</span>
-              <span className="block text-xs text-muted-foreground">
+              {option.label}
+              <span className="ml-2 normal-case tracking-normal opacity-60">
                 {option.detail}
               </span>
             </button>
@@ -136,26 +133,24 @@ export function UploadPanel({
         </div>
       </fieldset>
 
-      <div className="mt-5 flex gap-2">
-        <button
+      <div className="mt-8 flex flex-wrap items-center gap-3">
+        <motion.button
           type="button"
+          whileHover={file === null || isRunning ? undefined : { scale: 1.03 }}
+          whileTap={file === null || isRunning ? undefined : { scale: 0.97 }}
           disabled={file === null || isRunning}
           onClick={() => {
             if (file !== null) {
               onStart(file, depth);
             }
           }}
-          className="flex-1 bg-foreground px-4 py-2.5 text-sm text-background transition-opacity disabled:cursor-not-allowed disabled:opacity-30"
+          className={`${buttonPrimary} disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-foreground`}
         >
-          {isRunning ? "Checking…" : "Check this paper"}
-        </button>
+          {isRunning ? "Checking" : "Check this paper"}
+        </motion.button>
 
         {isRunning ? (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="border border-border px-4 py-2.5 text-sm text-muted-foreground transition-colors hover:border-verdict-retracted hover:text-verdict-retracted"
-          >
+          <button type="button" onClick={onCancel} className={buttonQuiet}>
             Stop
           </button>
         ) : null}
