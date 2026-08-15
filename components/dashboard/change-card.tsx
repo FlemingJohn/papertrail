@@ -1,5 +1,6 @@
 import type { DetectedChange, Importance } from "@/lib/schemas/watch";
 import { changeKindLabels, importanceLabels } from "@/lib/config/labels";
+import { microLabel, pill } from "@/lib/design/tokens";
 import { ArrowRightIcon } from "./icons";
 
 const seriousKinds: ReadonlyArray<DetectedChange["kind"]> = [
@@ -12,38 +13,38 @@ export function ChangeCard({ change }: { change: DetectedChange }) {
 
   return (
     <article
-      className={`border bg-card/40 p-4 ${
-        isSerious ? "border-verdict-retracted/40" : "border-border/60"
+      className={`border-l pl-5 ${
+        isSerious ? "border-verdict-retracted/60" : "border-white/15"
       }`}
     >
       <p
-        className={`mb-1.5 text-xs tracking-wide uppercase ${
-          isSerious ? "text-verdict-retracted" : "text-muted-foreground"
+        className={`${microLabel} mb-3 ${
+          isSerious ? "text-verdict-retracted" : ""
         }`}
       >
         {changeKindLabels[change.kind]}
       </p>
 
-      <p className="mb-3 text-sm text-foreground">{change.headline}</p>
+      <p className="mb-4 max-w-2xl font-display text-lg font-light leading-snug">
+        {change.headline}
+      </p>
 
       {change.previousValue === null && change.currentValue === null ? null : (
-        <div className="mb-3 flex flex-wrap items-center gap-2 font-mono text-xs">
+        <div className="mb-4 flex flex-wrap items-center gap-3 font-mono text-xs">
           <span className="text-muted-foreground line-through">
             {change.previousValue ?? "not present"}
           </span>
           <ArrowRightIcon className="size-3.5 text-muted-foreground" />
-          <span className="text-foreground">
-            {change.currentValue ?? "not present"}
-          </span>
+          <span>{change.currentValue ?? "not present"}</span>
         </div>
       )}
 
-      <p className="border-l-2 border-accent/50 pl-3 text-sm text-muted-foreground">
+      <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
         {change.cause}
       </p>
 
       {change.affectedClaimIdentifiers.length === 0 ? null : (
-        <p className="mt-2 font-mono text-xs text-muted-foreground">
+        <p className={`${microLabel} mt-3`}>
           Affects {change.affectedClaimIdentifiers.join(", ")}
         </p>
       )}
@@ -52,17 +53,15 @@ export function ChangeCard({ change }: { change: DetectedChange }) {
 }
 
 const importanceColours: Record<Importance, string> = {
-  high: "text-verdict-retracted border-verdict-retracted/50",
-  medium: "text-verdict-wrong-source border-verdict-wrong-source/40",
-  low: "text-muted-foreground border-border",
-  none: "text-muted-foreground border-border",
+  high: "text-verdict-retracted border-verdict-retracted/60",
+  medium: "text-verdict-wrong-source border-verdict-wrong-source/50",
+  low: "text-muted-foreground border-white/20",
+  none: "text-muted-foreground border-white/20",
 };
 
 export function ImportanceBadge({ importance }: { importance: Importance }) {
   return (
-    <span
-      className={`inline-flex items-center border px-2 py-0.5 text-xs whitespace-nowrap ${importanceColours[importance]}`}
-    >
+    <span className={`${pill} ${importanceColours[importance]}`}>
       {importanceLabels[importance]}
     </span>
   );
