@@ -1,4 +1,4 @@
-import type { TextBlock } from "../schemas/document";
+import type { DocumentTable, PageLocation } from "../schemas/document";
 import type { Claim } from "../schemas/claim";
 import type { CitationCheck } from "../schemas/citation";
 import type { Measurement } from "../schemas/measurement";
@@ -6,31 +6,75 @@ import type { MissingDetail } from "../schemas/method";
 import type { Conflict } from "../schemas/conflict";
 import type { ReviewPoint } from "../schemas/review";
 import type { ComparisonPaper } from "../schemas/paper";
+import type { IndexedBlock } from "./sections";
 import {
   citationVerdictLabels,
   missingDetailCategoryLabels,
   reviewAngleLabels,
 } from "../config/labels";
 
-const maximumBlockCharacters = 90000;
+const maximumBlockCharacters = 70000;
 
-export function describeBlocks(blocks: TextBlock[]): string {
+const minimumBlockCharacters = 25;
+
+export interface BlockIndexMap {
+  text: string;
+  locationByIndex: Map<number, PageLocation>;
+}
+
+export function describeIndexedBlocks(
+  indexed: IndexedBlock[]
+): BlockIndexMap {
   const lines: string[] = [];
+  const locationByIndex = new Map<number, PageLocation>();
   let usedCharacters = 0;
+  let wasTruncated = false;
 
-  for (const block of blocks) {
-    const line = `[page ${block.location.pageNumber}] [${block.location.polygon.join(",")}] ${block.text}`;
+  for (const entry of indexed) {
+    const text = entry.block.text.trim();
+
+    if (text.length < minimumBlockCharacters) {
+      continue;
+    }
+
+    const line = `[b${entry.index}|p${entry.block.location.pageNumber}] ${text}`;
 
     if (usedCharacters + line.length > maximumBlockCharacters) {
-      lines.push("[text truncated because the paper exceeded the reading limit]");
+      wasTruncated = true;
       break;
     }
 
     lines.push(line);
+    locationByIndex.set(entry.index, entry.block.location);
     usedCharacters += line.length;
   }
 
-  return lines.join("\n");
+  if (wasTruncated) {
+    lines.push("[text truncated because the paper exceeded the reading limit]");
+  }
+
+  return { text: lines.join("\n"), locationByIndex };
+}
+
+export function describeTables(tables: DocumentTable[]): string {
+  return tables
+    .map((table, index) => {
+      const rows = new Map<number, string[]>();
+
+      for (const cell of table.cells) {
+        const row = rows.get(cell.rowIndex) ?? [];
+        row[cell.columnIndex] = cell.text;
+        rows.set(cell.rowIndex, row);
+      }
+
+      const rendered = [...rows.entries()]
+        .sort((left, right) => left[0] - right[0])
+        .map(([, columns]) => columns.join(" | "))
+        .join("\n");
+
+      return `Table ${index + 1} [p${table.location.pageNumber}] ${table.caption ?? ""}\n${rendered}`;
+    })
+    .join("\n\n");
 }
 
 export function describeClaims(claims: Claim[]): string {
