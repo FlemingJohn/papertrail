@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { buttonQuiet, sectionLabel } from "@/lib/design/tokens";
 import { ProblemIcon } from "./icons";
 
 interface ErrorBoundaryProps {
@@ -36,18 +37,20 @@ export class ErrorBoundary extends Component<
     }
 
     return (
-      <div className="border border-verdict-retracted/40 bg-card/40 p-6">
-        <div className="mb-3 flex items-center gap-2 text-verdict-retracted">
-          <ProblemIcon className="size-5" />
-          <h2 className="text-sm">This section could not be displayed</h2>
+      <div className="border-t border-verdict-retracted/40 pt-8">
+        <div className="mb-4 flex items-center gap-3">
+          <ProblemIcon className="size-5 text-verdict-retracted" />
+          <p className={`${sectionLabel} text-verdict-retracted`}>
+            This section could not be displayed
+          </p>
         </div>
-        <p className="mb-4 text-sm text-muted-foreground">
+        <p className="mb-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           {this.state.message}
         </p>
         <button
           type="button"
           onClick={() => this.setState({ message: null })}
-          className="border border-border px-3 py-1.5 text-xs text-foreground transition-colors hover:border-accent hover:text-accent"
+          className={buttonQuiet}
         >
           Try again
         </button>
