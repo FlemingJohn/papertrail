@@ -27,6 +27,14 @@ export const explanationSchema = z.object({
 
 export type Explanation = z.infer<typeof explanationSchema>;
 
+export const explanationResultSchema = z.object({
+  wasExplained: z.boolean(),
+  explanation: explanationSchema.nullable(),
+  note: z.string().max(400),
+});
+
+export type ExplanationResult = z.infer<typeof explanationResultSchema>;
+
 export const conflictSchema = z.object({
   identifier: z.string(),
   question: z.string(),
