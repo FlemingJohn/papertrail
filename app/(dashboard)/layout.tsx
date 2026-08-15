@@ -13,9 +13,20 @@ export default function DashboardLayout({
           <Link href="/" className="font-display text-lg text-foreground">
             PaperTrail
           </Link>
-          <p className="hidden text-xs text-muted-foreground sm:block">
-            Every claim, traced
-          </p>
+          <nav className="flex items-center gap-5">
+            <Link
+              href="/check"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Check a paper
+            </Link>
+            <Link
+              href="/watchlist"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Watchlist
+            </Link>
+          </nav>
         </div>
       </header>
 
