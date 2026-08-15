@@ -34,6 +34,28 @@ export const readingListSchema = z.object({
 
 export type ReadingList = z.infer<typeof readingListSchema>;
 
+export const readingDraftSchema = z.object({
+  claimIdentifier: z.string(),
+  value: z.number().nullable(),
+  kind: measurementKindSchema,
+  sampleSize: z.number().int().positive().nullable(),
+  errorRangeLow: z.number().nullable(),
+  errorRangeHigh: z.number().nullable(),
+  probabilityValue: z.number().nullable(),
+  unit: z.string().nullable(),
+  blockIndex: z.number().int().nonnegative().nullable(),
+  confidence: z.number().min(0).max(1),
+  notes: z.string().max(300),
+});
+
+export type ReadingDraft = z.infer<typeof readingDraftSchema>;
+
+export const readingDraftListSchema = z.object({
+  readings: z.array(readingDraftSchema),
+});
+
+export type ReadingDraftList = z.infer<typeof readingDraftListSchema>;
+
 export const agreementStatusSchema = z.enum([
   "both-agreed",
   "resolved-by-judge",

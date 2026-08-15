@@ -26,3 +26,20 @@ export const claimListSchema = z.object({
 });
 
 export type ClaimList = z.infer<typeof claimListSchema>;
+
+export const claimDraftSchema = z.object({
+  identifier: z.string(),
+  text: z.string().min(1),
+  kind: claimKindSchema,
+  section: z.string().nullable(),
+  citationMarkers: z.array(z.string()),
+  blockIndex: z.number().int().nonnegative(),
+});
+
+export type ClaimDraft = z.infer<typeof claimDraftSchema>;
+
+export const claimDraftListSchema = z.object({
+  claims: z.array(claimDraftSchema),
+});
+
+export type ClaimDraftList = z.infer<typeof claimDraftListSchema>;
