@@ -1,7 +1,33 @@
 import type { LangGraphRunnableConfig } from "@langchain/langgraph";
 import type { RunState, RunStateUpdate } from "../state";
 import { readDocument } from "../../tools/azure/read-document";
+import type { TextBlock } from "../../schemas/document";
 import { announceStage, buildEventWriter, reportActivity } from "../writer";
+
+const minimumTitleLength = 8;
+
+const maximumTitleLength = 300;
+
+function readTitle(blocks: TextBlock[]): string | null {
+  const titleBlock = blocks.find((block) => block.role === "title");
+
+  if (titleBlock !== undefined) {
+    const text = titleBlock.text.trim();
+    if (text.length >= minimumTitleLength) {
+      return text.slice(0, maximumTitleLength);
+    }
+  }
+
+  const firstOnPageOne = blocks.find(
+    (block) =>
+      block.location.pageNumber === 1 &&
+      block.role === null &&
+      block.text.trim().length >= minimumTitleLength &&
+      block.text.trim().length <= maximumTitleLength
+  );
+
+  return firstOnPageOne === undefined ? null : firstOnPageOne.text.trim();
+}
 
 export async function readPaper(
   state: RunState,
@@ -41,8 +67,15 @@ export async function readPaper(
     );
   }
 
+  const titleFromDocument = readTitle(document.textBlocks);
+
+  if (titleFromDocument !== null) {
+    reportActivity(writer, "info", titleFromDocument, "Title taken from the paper");
+  }
+
   return {
     document,
+    paperTitle: titleFromDocument ?? state.paperTitle,
     documentPagesRead: document.pageCount,
     limitations:
       document.references.length === 0
