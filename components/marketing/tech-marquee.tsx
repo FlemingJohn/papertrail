@@ -2,34 +2,26 @@
 
 import { motion } from "framer-motion"
 
-const techItems = [
-  "NEXT.JS",
-  "REACT",
-  "TYPESCRIPT",
-  "PYTHON",
-  "PYTORCH",
-  "LATENCY",
-  "INTUITION",
-  "OPENAI",
-  "EMPATHY",
-  "WEBGL",
-  "NODE.JS",
-  "PRECISION",
+const verdicts = [
+  "SUPPORTED",
+  "PARTLY SUPPORTED",
+  "NOT SUPPORTED",
+  "WRONG SOURCE",
+  "INDIRECT SOURCE",
+  "SOURCE NOT FOUND",
+  "RETRACTED",
+  "COULD NOT CHECK",
 ]
 
-const concepts = [
-  "ARCHITECTURE",
-  "SYSTEMS",
-  "INTERFACES",
-  "ALGORITHMS",
-  "EMERGENCE",
-  "COGNITION",
-  "SYNTHESIS",
-  "VELOCITY",
-  "ENTROPY",
-  "FLUX",
-  "AXIOM",
-  "TENSOR",
+const evidence = [
+  "OPENALEX",
+  "CROSSREF",
+  "EUROPE PMC",
+  "RETRACTION RECORD",
+  "REFERENCE LISTS",
+  "OPEN ACCESS FULL TEXT",
+  "RESULTS TABLES",
+  "PAGE POSITIONS",
 ]
 
 function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?: "left" | "right" }) {
@@ -44,7 +36,7 @@ function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?
         {duplicatedItems.map((item, index) => (
           <span
             key={index}
-            className="group font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight whitespace-nowrap cursor-default"
+            className="group font-display text-5xl md:text-7xl lg:text-8xl font-light tracking-tight whitespace-nowrap cursor-default"
             style={{
               WebkitTextStroke: "1px rgba(255,255,255,0.3)",
               color: "transparent",
@@ -71,7 +63,7 @@ function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?
 export function TechMarquee() {
   return (
     <section className="relative py-24 overflow-hidden md:py-32">
-      {/* Section Header */}
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -79,13 +71,13 @@ export function TechMarquee() {
         transition={{ duration: 0.8 }}
         className="px-8 md:px-12 mb-16"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">05 — TECHNICAL ARSENAL</p>
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">05 — THE VOCABULARY</p>
       </motion.div>
 
-      {/* Marquee Rows */}
+      
       <div className="space-y-4">
-        <MarqueeRow items={techItems} direction="left" />
-        <MarqueeRow items={concepts} direction="right" />
+        <MarqueeRow items={verdicts} direction="left" />
+        <MarqueeRow items={evidence} direction="right" />
       </div>
     </section>
   )
