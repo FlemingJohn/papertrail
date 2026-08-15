@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import type { WatchFrequency } from "@/lib/schemas/watch";
+import { buttonPrimary, buttonQuiet, sectionLabel } from "@/lib/design/tokens";
 import { CheckIcon, WarningIcon } from "./icons";
 
 interface WatchButtonProps {
@@ -53,71 +55,70 @@ export function WatchButton({ documentId }: WatchButtonProps) {
 
   if (status === "saved") {
     return (
-      <div className="flex items-center gap-3 border border-verdict-supported/40 bg-card/40 px-4 py-3">
-        <CheckIcon className="size-5 shrink-0 text-verdict-supported" />
+      <section className="flex items-start gap-4 border-t border-verdict-supported/40 pt-8">
+        <CheckIcon className="size-5 shrink-0 translate-y-1 text-verdict-supported" />
         <div>
-          <p className="text-sm text-foreground">
-            This paper is now checked {frequency}.
+          <p className="font-display text-xl font-light">
+            Now checked {frequency}.
           </p>
           <Link
             href="/watchlist"
-            className="text-xs text-accent underline-offset-2 hover:underline"
+            className="mt-2 inline-block font-mono text-[10px] uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
           >
             See everything being watched
           </Link>
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="border border-border/60 bg-card/40 px-4 py-4">
-      <p className="mb-1 text-sm text-foreground">
-        Tell me when this changes
-      </p>
-      <p className="mb-3 text-xs text-muted-foreground">
+    <section className="border-t border-white/10 pt-8">
+      <p className={`${sectionLabel} mb-4`}>Tell me when this changes</p>
+
+      <p className="mb-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">
         Sources get retracted, new studies appear, and conclusions stop holding.
         A repeat check compares against this report and reports only what moved.
       </p>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex">
-          {frequencyOptions.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => setFrequency(option.value)}
-              aria-pressed={frequency === option.value}
-              className={`border px-3 py-1.5 text-xs transition-colors ${
-                frequency === option.value
-                  ? "border-accent text-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+      <div className="flex flex-wrap items-center gap-3">
+        {frequencyOptions.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => setFrequency(option.value)}
+            aria-pressed={frequency === option.value}
+            className={`rounded-full border px-5 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors duration-300 ${
+              frequency === option.value
+                ? "border-white/60 text-foreground"
+                : "border-white/20 text-muted-foreground hover:border-white/40"
+            }`}
+          >
+            {option.label}
+          </button>
+        ))}
 
-        <button
+        <motion.button
           type="button"
+          whileHover={status === "saving" ? undefined : { scale: 1.03 }}
+          whileTap={status === "saving" ? undefined : { scale: 0.97 }}
           onClick={() => void startWatching()}
           disabled={status === "saving"}
-          className="bg-foreground px-4 py-1.5 text-xs text-background transition-opacity disabled:opacity-40"
+          className={`${buttonQuiet} disabled:opacity-40`}
         >
-          {status === "saving" ? "Saving…" : "Watch this paper"}
-        </button>
+          {status === "saving" ? "Saving" : "Watch this paper"}
+        </motion.button>
       </div>
 
       {problem === null ? null : (
         <p
           role="alert"
-          className="mt-3 flex items-start gap-2 text-xs text-verdict-wrong-source"
+          className="mt-4 flex items-start gap-2 text-sm text-verdict-wrong-source"
         >
-          <WarningIcon className="size-4 shrink-0" />
+          <WarningIcon className="size-4 shrink-0 translate-y-0.5" />
           {problem}
         </p>
       )}
-    </div>
+    </section>
   );
 }
