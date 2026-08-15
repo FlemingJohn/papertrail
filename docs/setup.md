@@ -45,11 +45,33 @@ Fill in:
 | `AZURE_DOCUMENT_KEY` | Same page |
 | `OPENALEX_CONTACT_EMAIL` | Your email. OpenAlex asks for it and gives faster service in return |
 
-`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `DATABASE_URL` are validated on startup but are only needed once you store reports for the watch feature.
+`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `DATABASE_URL` are needed for storing reports and for the watch feature. See step 4 below.
 
 `.env.local` is gitignored. Keep it that way. If a key ever reaches a shared log or a chat window, rotate it in the portal rather than hoping.
 
-## 4. Run it
+## 4. Supabase
+
+Create a project at supabase.com, then run the migration. Either paste `supabase/migrations/0001_initial.sql` into the SQL editor, or push it with Drizzle:
+
+```bash
+npm run database:push
+```
+
+Copy three values from Project Settings:
+
+| Name | Where |
+| --- | --- |
+| `SUPABASE_URL` | API, Project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | API, service role key. Server only, never expose it to the browser |
+| `DATABASE_URL` | Database, connection string. Use the **pooled** connection on port 6543 |
+
+Use the pooled connection string. Serverless functions open and close connections constantly, and the direct connection on port 5432 will exhaust its limit under any real use.
+
+Storing reports is what makes watching possible. A check compares the newest stored report against the previous one, so a paper needs two before anything can be compared.
+
+If the database is not reachable, checking a paper still works end to end. The report appears as normal and a warning says it was not saved. Only watching is unavailable.
+
+## 5. Run it
 
 ```bash
 npm install
@@ -66,7 +88,7 @@ Open `http://localhost:3000/check`, drop in a PDF and choose a depth.
 
 Start with Quick on a short open access paper to confirm your keys work before spending on a full run.
 
-## 5. Checks before committing
+## 6. Checks before committing
 
 ```bash
 npm run typecheck
