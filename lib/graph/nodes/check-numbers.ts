@@ -1,15 +1,28 @@
 import type { LangGraphRunnableConfig } from "@langchain/langgraph";
 import type { RunState, RunStateUpdate } from "../state";
-import type { Measurement, Reading } from "../../schemas/measurement";
+import type { PageLocation } from "../../schemas/document";
+import type {
+  Measurement,
+  Reading,
+  ReadingDraft,
+} from "../../schemas/measurement";
 import { runAgent } from "../../agents/run-agent";
 import { numberReaderOne } from "../../agents/definitions/number-reader-one";
 import { numberReaderTwo } from "../../agents/definitions/number-reader-two";
 import { numberJudge } from "../../agents/definitions/number-judge";
 import { announceStage, buildEventWriter, reportActivity } from "../writer";
-import { describeBlocks, describeClaims } from "../context";
+import { describeClaims, describeIndexedBlocks, describeTables } from "../context";
+import { kindsForNumbers, selectKinds, splitIntoSections } from "../sections";
 import { mapWithLimit } from "../parallel";
 
 const concurrentJudgements = 3;
+
+const agreementThreshold = 0.95;
+
+const fallbackLocation: PageLocation = {
+  pageNumber: 1,
+  polygon: [0, 0, 0, 0, 0, 0, 0, 0],
+};
 
 export async function checkNumbers(
   state: RunState,
@@ -36,14 +49,19 @@ export async function checkNumbers(
     return {};
   }
 
+  const indexed = splitIntoSections(state.document.textBlocks);
+  const resultBlocks = selectKinds(indexed, kindsForNumbers);
+  const chosen = resultBlocks.length > 0 ? resultBlocks : indexed;
+  const { text, locationByIndex } = describeIndexedBlocks(chosen);
+
   const readingPrompt = [
     `Paper title: ${state.paperTitle}`,
     "",
     "Statements that report a result:",
     describeClaims(findingClaims),
     "",
-    "Paper text, with page and position on each block:",
-    describeBlocks(state.document.textBlocks),
+    "Blocks from the results and abstract:",
+    text,
     "",
     "Tables:",
     describeTables(state.document.tables),
@@ -85,70 +103,107 @@ export async function checkNumbers(
   const tokensIn = firstOutcome.value.tokensIn + secondOutcome.value.tokensIn;
   let tokensOut = firstOutcome.value.tokensOut + secondOutcome.value.tokensOut;
 
-  const pairs = pairReadings(
-    firstOutcome.value.output.readings,
-    secondOutcome.value.output.readings,
-    findingClaims.map((claim) => claim.identifier)
+  function resolve(draft: ReadingDraft): Reading {
+    return {
+      value: draft.value,
+      kind: draft.kind,
+      sampleSize: draft.sampleSize,
+      errorRangeLow: draft.errorRangeLow,
+      errorRangeHigh: draft.errorRangeHigh,
+      probabilityValue: draft.probabilityValue,
+      unit: draft.unit,
+      location:
+        draft.blockIndex === null
+          ? fallbackLocation
+          : (locationByIndex.get(draft.blockIndex) ?? fallbackLocation),
+      confidence: draft.confidence,
+      notes: draft.notes,
+    };
+  }
+
+  const firstByClaim = new Map(
+    firstOutcome.value.output.readings.map((draft) => [
+      draft.claimIdentifier,
+      draft,
+    ])
+  );
+  const secondByClaim = new Map(
+    secondOutcome.value.output.readings.map((draft) => [
+      draft.claimIdentifier,
+      draft,
+    ])
   );
 
-  const measurements = await mapWithLimit(
-    pairs,
-    concurrentJudgements,
-    async (pair) => {
-      if (pair.readerOne !== null && pair.readerTwo !== null) {
-        const agreementScore = scoreAgreement(pair.readerOne, pair.readerTwo);
+  const claimIdentifiers = [
+    ...new Set([...firstByClaim.keys(), ...secondByClaim.keys()]),
+  ];
 
-        if (agreementScore >= 0.95) {
-          return {
-            claimIdentifier: pair.claimIdentifier,
-            readerOne: pair.readerOne,
-            readerTwo: pair.readerTwo,
-            agreedValue: pair.readerOne,
-            agreementScore,
-            status: "both-agreed" as const,
-            judgeReasoning: null,
-          } satisfies Measurement;
-        }
+  const measurements = await mapWithLimit(
+    claimIdentifiers,
+    concurrentJudgements,
+    async (claimIdentifier): Promise<Measurement> => {
+      const firstDraft = firstByClaim.get(claimIdentifier) ?? null;
+      const secondDraft = secondByClaim.get(claimIdentifier) ?? null;
+
+      const readerOne = firstDraft === null ? null : resolve(firstDraft);
+      const readerTwo = secondDraft === null ? null : resolve(secondDraft);
+
+      const agreementScore =
+        readerOne !== null && readerTwo !== null
+          ? scoreAgreement(readerOne, readerTwo)
+          : 0;
+
+      if (
+        readerOne !== null &&
+        readerTwo !== null &&
+        agreementScore >= agreementThreshold
+      ) {
+        return {
+          claimIdentifier,
+          readerOne,
+          readerTwo,
+          agreedValue: readerOne,
+          agreementScore,
+          status: "both-agreed",
+          judgeReasoning: null,
+        };
       }
 
       const judgeOutcome = await runAgent(numberJudge, {
         runIdentifier: state.runIdentifier,
-        subject: pair.claimIdentifier,
+        subject: claimIdentifier,
         userPrompt: [
-          `Statement identifier: ${pair.claimIdentifier}`,
+          `Statement identifier: ${claimIdentifier}`,
           "",
-          `Reader one recorded: ${JSON.stringify(pair.readerOne)}`,
-          `Reader two recorded: ${JSON.stringify(pair.readerTwo)}`,
+          `Reader one recorded: ${JSON.stringify(firstDraft)}`,
+          `Reader two recorded: ${JSON.stringify(secondDraft)}`,
         ].join("\n"),
         writer,
       });
 
       if (!judgeOutcome.successful) {
         return {
-          claimIdentifier: pair.claimIdentifier,
-          readerOne: pair.readerOne,
-          readerTwo: pair.readerTwo,
+          claimIdentifier,
+          readerOne,
+          readerTwo,
           agreedValue: null,
-          agreementScore: 0,
-          status: "still-disputed" as const,
+          agreementScore,
+          status: "still-disputed",
           judgeReasoning: "The judgement step did not complete.",
-        } satisfies Measurement;
+        };
       }
 
       tokensOut += judgeOutcome.value.tokensOut;
 
       return {
-        claimIdentifier: pair.claimIdentifier,
-        readerOne: pair.readerOne,
-        readerTwo: pair.readerTwo,
+        claimIdentifier,
+        readerOne,
+        readerTwo,
         agreedValue: judgeOutcome.value.output.agreedValue,
-        agreementScore:
-          pair.readerOne !== null && pair.readerTwo !== null
-            ? scoreAgreement(pair.readerOne, pair.readerTwo)
-            : 0,
+        agreementScore,
         status: judgeOutcome.value.output.status,
         judgeReasoning: judgeOutcome.value.output.reasoning,
-      } satisfies Measurement;
+      };
     }
   );
 
@@ -187,84 +242,60 @@ export async function checkNumbers(
   };
 }
 
-interface ReadingPair {
-  claimIdentifier: string;
-  readerOne: Reading | null;
-  readerTwo: Reading | null;
-}
-
-function pairReadings(
-  firstReadings: Reading[],
-  secondReadings: Reading[],
-  claimIdentifiers: string[]
-): ReadingPair[] {
-  return claimIdentifiers
-    .map((claimIdentifier, index) => ({
-      claimIdentifier,
-      readerOne: firstReadings[index] ?? null,
-      readerTwo: secondReadings[index] ?? null,
-    }))
-    .filter((pair) => pair.readerOne !== null || pair.readerTwo !== null);
-}
-
 function scoreAgreement(first: Reading, second: Reading): number {
-  let matches = 0;
-  let compared = 0;
+  const headlineMatches = valuesMatch(first.value, second.value);
 
-  const fields: Array<keyof Reading> = [
-    "value",
-    "sampleSize",
-    "errorRangeLow",
-    "errorRangeHigh",
-    "probabilityValue",
-    "kind",
+  const supportingFields: Array<
+    [number | string | null, number | string | null]
+  > = [
+    [first.sampleSize, second.sampleSize],
+    [first.errorRangeLow, second.errorRangeLow],
+    [first.errorRangeHigh, second.errorRangeHigh],
+    [first.probabilityValue, second.probabilityValue],
+    [first.kind, second.kind],
   ];
 
-  for (const field of fields) {
-    const firstValue = first[field];
-    const secondValue = second[field];
+  let comparedCount = 0;
+  let matchedCount = 0;
 
-    if (firstValue === null && secondValue === null) {
+  for (const [left, right] of supportingFields) {
+    if (left === null && right === null) {
       continue;
     }
 
-    compared += 1;
+    comparedCount += 1;
 
-    if (typeof firstValue === "number" && typeof secondValue === "number") {
-      const scale = Math.max(Math.abs(firstValue), Math.abs(secondValue), 1);
-      if (Math.abs(firstValue - secondValue) / scale < 0.02) {
-        matches += 1;
+    if (typeof left === "number" && typeof right === "number") {
+      if (valuesMatch(left, right)) {
+        matchedCount += 1;
       }
       continue;
     }
 
-    if (firstValue === secondValue) {
-      matches += 1;
+    if (left === right) {
+      matchedCount += 1;
     }
   }
 
-  return compared === 0 ? 1 : Math.round((matches / compared) * 100) / 100;
+  const supportingScore =
+    comparedCount === 0 ? 1 : matchedCount / comparedCount;
+
+  const combined = headlineMatches
+    ? 0.6 + 0.4 * supportingScore
+    : 0.4 * supportingScore;
+
+  return Math.round(combined * 100) / 100;
 }
 
-function describeTables(
-  tables: NonNullable<RunState["document"]>["tables"]
-): string {
-  return tables
-    .map((table, index) => {
-      const rows = new Map<number, string[]>();
+function valuesMatch(left: number | null, right: number | null): boolean {
+  if (left === null && right === null) {
+    return true;
+  }
 
-      for (const cell of table.cells) {
-        const row = rows.get(cell.rowIndex) ?? [];
-        row[cell.columnIndex] = cell.text;
-        rows.set(cell.rowIndex, row);
-      }
+  if (left === null || right === null) {
+    return false;
+  }
 
-      const rendered = [...rows.entries()]
-        .sort((left, right) => left[0] - right[0])
-        .map(([, columns]) => columns.join(" | "))
-        .join("\n");
-
-      return `Table ${index + 1} [page ${table.location.pageNumber}] ${table.caption ?? ""}\n${rendered}`;
-    })
-    .join("\n\n");
+  const scale = Math.max(Math.abs(left), Math.abs(right), 1);
+  return Math.abs(left - right) / scale < 0.02;
 }
