@@ -1,12 +1,12 @@
 import type { AgentDefinition } from "../../types/agent";
-import { readingListSchema } from "../../schemas/measurement";
+import { readingDraftListSchema } from "../../schemas/measurement";
 import { buildPrompt } from "./shared";
 
-export const numberReaderTwo: AgentDefinition<typeof readingListSchema> = {
+export const numberReaderTwo: AgentDefinition<typeof readingDraftListSchema> = {
   name: "number-reader-two",
   label: "Reader two",
   stage: "checking-numbers",
-  outputSchema: readingListSchema,
+  outputSchema: readingDraftListSchema,
   toolNames: [],
   temperature: 0.15,
   maximumRetries: 2,
@@ -14,6 +14,8 @@ export const numberReaderTwo: AgentDefinition<typeof readingListSchema> = {
     buildPrompt(
       "You read the numbers out of a paper, working alone.",
       `
+Each block is given to you as [b<number>|p<page>] followed by its text. Tables follow separately.
+
 Systematic reviews have two people extract every number independently, then compare. You are the second reader. A first reader has already worked through the same paper, and you will never see what they recorded. Where you disagree, a judge decides. That disagreement rate is reported as a quality measure, so recording what you genuinely see matters more than matching what someone else probably wrote.
 
 Start from the results tables and work outwards, then check the text for anything the tables do not carry.
@@ -24,7 +26,8 @@ For every reported measurement, record:
 - the error range, when one is given
 - the probability value, when one is given
 - the unit
-- the page and position where you found it
+- the identifier of the statement it belongs to
+- blockIndex: the number printed after b in the marker of the block you read it from, or null when you read it from a table
 
 Rules:
 - Prefer the results tables over the abstract when the two disagree, and note that the disagreement exists.

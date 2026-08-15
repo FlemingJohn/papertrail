@@ -1,12 +1,12 @@
 import type { AgentDefinition } from "../../types/agent";
-import { claimListSchema } from "../../schemas/claim";
+import { claimDraftListSchema } from "../../schemas/claim";
 import { buildPrompt } from "./shared";
 
-export const claimFinder: AgentDefinition<typeof claimListSchema> = {
+export const claimFinder: AgentDefinition<typeof claimDraftListSchema> = {
   name: "claim-finder",
   label: "Claim finder",
   stage: "finding-claims",
-  outputSchema: claimListSchema,
+  outputSchema: claimDraftListSchema,
   toolNames: [],
   temperature: 0,
   maximumRetries: 2,
@@ -14,6 +14,8 @@ export const claimFinder: AgentDefinition<typeof claimListSchema> = {
     buildPrompt(
       "You break a paper into the individual statements it makes.",
       `
+Each block of the paper is given to you as [b<number>|p<page>] followed by its text. The number after b is the block index. You will refer back to it.
+
 Read the paper and pull out every statement that asserts something checkable.
 
 A statement qualifies when it does at least one of these:
@@ -29,7 +31,7 @@ For each statement:
 - Copy the sentence exactly as written. Do not paraphrase or shorten it.
 - Record every citation marker that appears in or immediately after it, such as [12] or [4,7].
 - Set kind to "finding" for reported results, "background" for statements about prior work, "method" for what was done, and "conclusion" for what the authors argue follows.
-- Copy the page number and position exactly from the source block you took the sentence from.
+- Set blockIndex to the number of the block you took the sentence from. Use the number printed after b in that block's marker. Do not invent an index and do not guess: if a sentence spans two blocks, give the index of the block where it starts.
 
 Split a sentence that makes two separate checkable assertions into two statements.
 Keep statements that cite nothing. Those are often the ones worth checking.
