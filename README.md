@@ -1,74 +1,166 @@
+<img src="docs/banner.svg" alt="PaperTrail — every claim, traced" width="100%">
+
 # PaperTrail
 
-Checks whether a research paper's citations, numbers and methods hold up, and tells you when that changes.
+**Checks whether a research paper's citations, numbers and methods hold up — and tells you when that stops being true.**
 
-Upload a PDF. Twenty-four specialists read it, follow every citation back to its source, read the reported numbers twice over independently, list what is missing from the method, compare the findings against related papers, and produce a report where every conclusion traces back to a page and a quotation.
+Upload a PDF. Twenty-four specialists read it, follow every citation back to its source, read the reported numbers twice over independently, list what is missing from the method, compare the findings against related work, and produce a report where every conclusion traces back to a page and a quotation.
 
-## What it checks
+Then it keeps watching, because evidence moves.
 
-| Check | Question it answers |
+---
+
+## The problem
+
+A researcher citing a paper is trusting a chain they cannot see.
+
+**Citations drift.** A finding passes through three papers before you cite it, and somewhere along the way a qualifier falls off. The number survives; the conditions do not. Nobody checks, because checking one citation properly means finding the source, reading it, and comparing what it actually says against what the citing paper claims it says. Twenty minutes, per citation.
+
+**Sources get retracted after you cite them.** There is no mechanism that tells you.
+
+**Numbers get transcribed wrong.** Systematic reviews solve this by having two people extract every value independently and adjudicate the differences. That costs weeks of two people's time, so almost nobody outside a formal review does it.
+
+**Methods omit what you would need to repeat the work.** Randomisation, blinding, reagent concentrations, housing conditions. Not maliciously — they are simply assumed.
+
+The common thread: these are all checkable, all tedious, and all skipped. Not because researchers are careless, but because the arithmetic of doing it by hand never works out.
+
+---
+
+## Architecture
+
+<img src="docs/architecture.svg" alt="PaperTrail run flow" width="100%">
+
+---
+
+## How it works
+
+**A PDF becomes structured text with coordinates.** Azure Document Intelligence returns a bounding polygon for every paragraph and table cell. Nothing enters the record without one — provenance is a database constraint, not a nice-to-have.
+
+**One agent finds the checkable statements.** Every sentence that reports a result, states a fact, or draws a conclusion. References and acknowledgements are skipped; they carry nothing to check.
+
+**Four lanes then run at once**, each scoped to only the sections it needs:
+
+| Lane | What happens |
 | --- | --- |
-| Citations | Does the cited paper actually say what this sentence claims it says? |
-| Source tracing | Is the cited paper the original source, or is it repeating someone else? |
-| Retractions | Has any cited source been retracted? |
-| Numbers | Do two independent readers extract the same values from the tables? |
-| Methods | What is missing that would stop someone repeating this work? |
-| Conflicts | Do related papers disagree, and can that disagreement be explained? |
-| Review | What would a careful referee say about the statistics, originality, method and evidence? |
-| Watch | Has any of this stopped being true since the last check? |
+| **Citations** | Resolve the reference, check it for retraction, then two agents argue — one that the citation fails, one that it holds — neither seeing the other. A third reads both and rules. A fourth traces the finding back through the papers that repeated it. |
+| **Numbers** | Two agents extract every value independently, blind to each other. A judge resolves disagreements from the source text. The disagreement rate is reported, not hidden. |
+| **Methods** | One agent rewrites the method as a runnable protocol. A second hunts for what is missing and writes the question to put to the authors. |
+| **Related work** | Finds 2–10 comparable papers, deliberately including ones likely to disagree. |
 
-Every finding carries a verdict in plain words: `Supported`, `Partly supported`, `Not supported`, `Wrong source`, `Indirect source`, `Source not found`, `Retracted`, or `Could not check`.
+**Everything converges on one typed ledger.** Agents never pass prose to each other — each appends structured records, and merge reducers let all four lanes write concurrently without clobbering. After this point the PDF stops being the source of truth; later stages read the ledger.
 
-That last one matters. A source that could not be read is reported as unverified, never as wrong.
+**Then conflicts, review, and the report.** Conflicting findings are grouped and the differing factor identified. Four reviewers examine statistics, originality, method and evidence separately; a fifth arbitrates. A confidence rater weights every claim, and a writer produces the summary — including an explicit list of what could not be checked.
 
-## Why more than one agent
+### Why more than one agent
 
-Three of the checks cannot be done honestly by a single reader.
+Three of these cannot be done honestly by a single reader.
 
-**Citations** are judged by three separate agents. One argues the citation does not hold, one argues it does, and neither sees the other's argument. A third reads both and decides. A single agent asked "is this citation sound?" tends to agree with whatever it just read.
+**Citations** are judged by three agents because a single agent asked *"is this citation sound?"* tends to agree with whatever it just read. Splitting prosecution from defence, with a judge who sees both and neither of whom sees the other, removes that.
 
-**Numbers** are extracted twice, independently, by two agents that never see each other's work. Where they disagree, a third resolves it from the source text. This is how systematic reviews have always been done, and the disagreement rate between the two readers is reported as a quality measure rather than hidden.
+**Numbers** are extracted twice because that is how systematic reviews have always done it. The agreement rate between two blind readers is a quality measure you can publish; a single extraction gives you no way to know if it is wrong.
 
-**Reviews** come from four specialists looking at one thing each, combined by a fifth. Splitting them stops a single reviewer's strongest concern from crowding out the others.
+**Reviews** come from four specialists looking at one thing each, so a single reviewer's loudest concern cannot crowd out the others.
 
-## Watching a paper
+---
 
-Evidence moves. Sources get retracted, new trials contradict old ones, and a conclusion that held last year quietly stops holding.
+## What a researcher gets
 
-Ask PaperTrail to watch a paper and it re-checks on a schedule, compares the new result against the stored one, and tells you only what actually moved and why:
+Every claim comes back with a verdict in plain words — no jargon, no scores to decode:
 
-> The combined result fell from +0.44 to +0.19 and now crosses zero. Three new studies finding no effect entered the comparison, all dosed below 50 mg/kg.
+`Supported` · `Partly supported` · `Not supported` · `Wrong source` · `Indirect source` · `Source not found` · `Retracted` · `Could not check`
 
-One agent finds what changed. A second decides whether it is worth interrupting you for. That second one exists because a watcher that reports everything is a watcher nobody reads.
+That last one matters more than it looks. Roughly half of cited sources sit behind a paywall. Those come back marked **unverified, never wrong**, and every report ends with an explicit account of what it did not cover. A tool that hides its own blind spots earns more trust than it deserves.
+
+| Use it to | Instead of |
+| --- | --- |
+| Check a paper before you cite it | Trusting a chain you cannot see |
+| Check your own draft before submission | Finding out from Reviewer 2, four months later |
+| Extract meta-analysis data with an agreement score | Two people, several weeks |
+| Get told when a source is retracted | Never finding out |
+| Turn a methods section into a runnable protocol | Emailing the authors and waiting |
+
+**On a real run** — *Attention Is All You Need*, 15 pages, quick mode — it found 15 checkable claims, checked 10 citations, flagged 3 as unsupported and 2 whose sources it could not locate, and cross-checked 4 reported numbers across two blind readers. **$0.41, about ninety seconds.**
+
+---
+
+## By the numbers
+
+| | Count |
+| --- | --- |
+| **AI agents** | **24**, one file each |
+| **Tools** | **18** — 7 external and document, 11 database |
+| Agent-callable tools | 6 (the rest are node-invoked only) |
+| **MCP servers** | **1**, exposing the 6 agent-callable tools over stdio |
+| Open data sources | 3 — OpenAlex, Crossref, Europe PMC |
+| Verdict states | 8 |
+| Pipeline stages | 9, four of them concurrent |
+
+Sixteen of the 24 agents have **no tools at all**. They transform evidence handed to them. Giving a judge the ability to fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+| --- | --- |
+| Orchestration | **LangGraph 1.4** (TypeScript) — typed state, merge reducers, custom event streaming |
+| Reasoning | **Azure OpenAI GPT-4o**, strict JSON schema mode on every agent |
+| Document parsing | **Azure Document Intelligence** `prebuilt-layout` |
+| Framework | **Next.js 16**, React 19, Tailwind 4 |
+| Database | **Supabase Postgres** via Drizzle |
+| Interop | **Model Context Protocol** SDK |
+| Evidence | OpenAlex · Crossref · Europe PMC — all free, all keyless |
+| Validation | **Zod 4** — one schema serves the model, the API and the UI |
+
+**No vector database.** At 2–10 comparison papers everything fits in GPT-4o's context window, so retrieval sits behind a single function and can be swapped for pgvector without touching an agent.
+
+**Every external effect is a tool.** No `fetch` and no SQL exists outside `lib/tools/`. One wrapper adds caching, retry with backoff, timeouts, a call log and typed failures. A tool never throws into agent context — it returns a failure the agent can reason about, which is why `Could not check` is a real verdict instead of a crashed run.
+
+---
+
+## Business impact
+
+A systematic review costs **$140,000 and 6–18 months**, most of it spent on exactly the work here: screening, extraction, adjudication.
+
+- **Dual extraction** — the two-person, multi-week step of every formal review, done in minutes with a reported agreement score.
+- **Citation checking** — roughly 20 minutes of human work per citation, at **~$0.02 per citation** and no human time at all.
+- **Retraction monitoring** — currently nobody's job. Papers built on retracted work stay built on retracted work.
+- **Pre-submission review** — catching a power problem before submission instead of after a four-month review cycle.
+
+For journals and funders the same engine is a triage filter. For labs it is a standing check on the literature they depend on.
+
+---
+
+## Novelty
+
+**Adversarial citation judgement.** Not "does this DOI resolve" — two agents argue the case blind and a third rules. The failure mode of LLM fact-checking is agreeing with the text in front of it, and structural disagreement is the fix.
+
+**Citation-chain tracing.** Following a finding back through the papers that repeated it, to see whether a qualifier fell off along the way. This is a documented, unsolved problem in scientific publishing and nothing else does it automatically.
+
+**Dual-blind extraction with a published agreement rate.** Importing the methodological standard of systematic review into an automated tool, and reporting the disagreement rather than hiding it.
+
+**Versioned evidence.** Reports are frozen and content-addressed, so a check three months later compares against what was actually concluded then. `git diff` for scientific consensus.
+
+**Honest degradation as a feature.** Eight verdicts including `Could not check`, an explicit limitations section on every report, and a graph that declines to invent conflicts when it has too few papers to compare.
+
+---
 
 ## Running it
 
-See [docs/setup.md](docs/setup.md). In short:
-
 ```bash
 npm install
-cp .env.example .env.local     # fill in the Azure and Supabase values
+cp .env.example .env.local     # Azure values; Supabase optional
 npm run dev
 ```
 
-Then open `http://localhost:3000/check`.
-
-## Using it from an editor
-
-The same lookup tools are exposed over the Model Context Protocol, so a researcher can check a citation from inside any MCP client without opening the web app:
+Open `http://localhost:3000/check`. Checking a paper works without a database — only the watchlist needs one.
 
 ```bash
-npm run mcp
+npm run mcp                    # expose the lookup tools to any MCP client
 ```
 
 ## Documentation
 
-- [Architecture](docs/architecture.md) — how the twenty-four agents fit together
-- [Setup](docs/setup.md) — Azure deployments, environment values, first run
-- [Reproducibility](docs/reproducibility.md) — models, data sources, costs, and known limits
-
-## Built with
-
-Next.js 16, React 19, LangGraph 1.4, Azure OpenAI (GPT-4o), Azure Document Intelligence, TypeScript, Tailwind 4.
-
-Evidence comes from OpenAlex, Crossref and Europe PMC, all of which are free and need no key.
+- [Architecture](docs/architecture.md) — how the 24 agents fit together, and what happens when things fail
+- [Setup](docs/setup.md) — Azure deployments, Supabase, first run
+- [Reproducibility](docs/reproducibility.md) — models, data sources, measured costs, known limits
