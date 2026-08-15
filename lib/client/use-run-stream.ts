@@ -43,6 +43,8 @@ export interface RunStreamState {
   tokensOut: number;
   activeAgentCount: number;
   report: Report | null;
+  documentId: string | null;
+  isFirstReport: boolean;
   errorMessage: string | null;
 }
 
@@ -62,6 +64,8 @@ const initialState: RunStreamState = {
   tokensOut: 0,
   activeAgentCount: 0,
   report: null,
+  documentId: null,
+  isFirstReport: false,
   errorMessage: null,
 };
 
@@ -287,6 +291,13 @@ function applyFrame(
         status: "finished",
         report,
         agents: current.agents.map((agent) => ({ ...agent, isRunning: false })),
+      };
+
+    case "run-stored":
+      return {
+        ...current,
+        documentId: event.documentId,
+        isFirstReport: event.isFirstReport,
       };
 
     case "run-failed":
