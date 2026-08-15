@@ -15,6 +15,7 @@ Upload a PDF. Twenty-four specialists read it, follow every citation back to its
 | Methods | What is missing that would stop someone repeating this work? |
 | Conflicts | Do related papers disagree, and can that disagreement be explained? |
 | Review | What would a careful referee say about the statistics, originality, method and evidence? |
+| Watch | Has any of this stopped being true since the last check? |
 
 Every finding carries a verdict in plain words: `Supported`, `Partly supported`, `Not supported`, `Wrong source`, `Indirect source`, `Source not found`, `Retracted`, or `Could not check`.
 
@@ -29,6 +30,16 @@ Three of the checks cannot be done honestly by a single reader.
 **Numbers** are extracted twice, independently, by two agents that never see each other's work. Where they disagree, a third resolves it from the source text. This is how systematic reviews have always been done, and the disagreement rate between the two readers is reported as a quality measure rather than hidden.
 
 **Reviews** come from four specialists looking at one thing each, combined by a fifth. Splitting them stops a single reviewer's strongest concern from crowding out the others.
+
+## Watching a paper
+
+Evidence moves. Sources get retracted, new trials contradict old ones, and a conclusion that held last year quietly stops holding.
+
+Ask PaperTrail to watch a paper and it re-checks on a schedule, compares the new result against the stored one, and tells you only what actually moved and why:
+
+> The combined result fell from +0.44 to +0.19 and now crosses zero. Three new studies finding no effect entered the comparison, all dosed below 50 mg/kg.
+
+One agent finds what changed. A second decides whether it is worth interrupting you for. That second one exists because a watcher that reports everything is a watcher nobody reads.
 
 ## Running it
 
