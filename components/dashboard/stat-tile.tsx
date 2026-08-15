@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { sectionLabel } from "@/lib/design/tokens";
 
 interface StatTileProps {
   label: string;
@@ -23,16 +24,20 @@ export function StatTile({
   icon,
 }: StatTileProps) {
   return (
-    <div className="border border-border/60 bg-card/40 px-4 py-4">
-      <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+    <div className="border-t border-white/10 pt-6">
+      <div className="mb-4 flex items-center gap-2">
         {icon}
-        <span className="text-xs tracking-wide uppercase">{label}</span>
+        <span className={sectionLabel}>{label}</span>
       </div>
-      <p className={`font-display text-4xl leading-none ${toneColours[tone]}`}>
+      <p
+        className={`font-display text-5xl font-light leading-none tracking-tight ${toneColours[tone]}`}
+      >
         {value}
       </p>
       {detail === undefined ? null : (
-        <p className="mt-2 text-xs text-muted-foreground">{detail}</p>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          {detail}
+        </p>
       )}
     </div>
   );
