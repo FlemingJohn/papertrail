@@ -32,9 +32,9 @@ export function buildGraph() {
 
     .addEdge("gather-papers", "find-conflicts")
     .addEdge("check-numbers", "find-conflicts")
+    .addEdge("check-citations", "find-conflicts")
+    .addEdge("check-methods", "find-conflicts")
 
-    .addEdge("check-citations", "review-paper")
-    .addEdge("check-methods", "review-paper")
     .addEdge("find-conflicts", "review-paper")
 
     .addEdge("review-paper", "write-report")
