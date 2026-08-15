@@ -9,6 +9,7 @@ import { LiveReasoning } from "@/components/dashboard/live-reasoning";
 import { PipelineProgress } from "@/components/dashboard/pipeline-progress";
 import { ReportView } from "@/components/dashboard/report-view";
 import { UploadPanel } from "@/components/dashboard/upload-panel";
+import { WatchButton } from "@/components/dashboard/watch-button";
 
 export default function CheckPage() {
   const { state, start, cancel } = useRunStream();
@@ -110,7 +111,12 @@ export default function CheckPage() {
                 <LiveReasoning agents={state.agents} />
               </div>
             ) : (
-              <ReportView report={state.report} />
+              <>
+                {state.documentId === null ? null : (
+                  <WatchButton documentId={state.documentId} />
+                )}
+                <ReportView report={state.report} />
+              </>
             )}
           </div>
         </div>
