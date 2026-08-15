@@ -25,15 +25,21 @@ No proprietary dataset is used. No data is sent anywhere except Azure and those 
 
 ## Cost
 
-Measured per run and shown in the interface. Approximate figures for a fourteen page paper:
+Measured per run and shown in the interface.
 
-| Depth | Model tokens | Cost |
-| --- | --- | --- |
-| Quick | about 60k in, 8k out | around $0.09 |
-| Standard | about 210k in, 26k out | around $0.35 |
-| Deep | about 480k in, 55k out | around $0.78 |
+The quick figure below is measured, not estimated: a fifteen page paper, *Attention Is All You Need*, run end to end against Azure OpenAI and Document Intelligence.
+
+| Depth | Model tokens | Cost | Basis |
+| --- | --- | --- | --- |
+| Quick | 56k in, 12k out | **$0.41** | measured |
+| Standard | roughly 3× quick | around $1.20 | extrapolated |
+| Deep | roughly 6× quick | around $2.40 | extrapolated |
+
+Standard and deep are extrapolated from the quick run and have not been measured. Treat them as the right order of magnitude, nothing more.
 
 Document Intelligence is charged per page and is included above at roughly a cent per page. Confirm the current rate for your region; that number is the one most likely to be out of date.
+
+An earlier version of this file estimated quick mode at $0.09. The first real run cost $0.61, because every agent was being handed the entire paper. Scoping each agent to the sections it needs, and replacing page coordinates in prompts with block indexes, brought input tokens down 53% and cost down to $0.41. The estimate was wrong by 7×; measuring it was the only way to find that out.
 
 The rates used for the displayed figure are in `lib/config/pricing.ts`. Change them there if yours differ.
 
