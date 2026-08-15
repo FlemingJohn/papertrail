@@ -1,10 +1,18 @@
 import type { LangGraphRunnableConfig } from "@langchain/langgraph";
 import type { RunState, RunStateUpdate } from "../state";
+import type { Claim } from "../../schemas/claim";
+import type { PageLocation } from "../../schemas/document";
 import { runAgent } from "../../agents/run-agent";
 import { claimFinder } from "../../agents/definitions/claim-finder";
 import { runDepthSettings } from "../../schemas/run";
 import { announceStage, buildEventWriter, reportActivity } from "../writer";
-import { describeBlocks } from "../context";
+import { describeIndexedBlocks } from "../context";
+import { kindsForClaims, selectKinds, splitIntoSections } from "../sections";
+
+const fallbackLocation: PageLocation = {
+  pageNumber: 1,
+  polygon: [0, 0, 0, 0, 0, 0, 0, 0],
+};
 
 export async function findClaims(
   state: RunState,
@@ -19,14 +27,29 @@ export async function findClaims(
 
   const settings = runDepthSettings[state.depth];
 
+  const indexed = splitIntoSections(state.document.textBlocks);
+  const readable = selectKinds(indexed, kindsForClaims);
+  const { text, locationByIndex } = describeIndexedBlocks(readable);
+
+  const skippedCount = indexed.length - readable.length;
+
+  if (skippedCount > 0) {
+    reportActivity(
+      writer,
+      "info",
+      `Skipped ${skippedCount} blocks of references and back matter`,
+      "Those carry no checkable statements."
+    );
+  }
+
   const outcome = await runAgent(claimFinder, {
     runIdentifier: state.runIdentifier,
     subject: state.paperTitle,
     userPrompt: [
       `Paper title: ${state.paperTitle}`,
       "",
-      "Text blocks, each with the page and position you must copy exactly:",
-      describeBlocks(state.document.textBlocks),
+      "Blocks:",
+      text,
       "",
       `Return at most ${settings.maximumClaims} statements, choosing the most checkable ones if there are more.`,
     ].join("\n"),
@@ -39,13 +62,26 @@ export async function findClaims(
     );
   }
 
-  const claims = outcome.value.output.claims.slice(0, settings.maximumClaims);
+  const claims: Claim[] = outcome.value.output.claims
+    .slice(0, settings.maximumClaims)
+    .map((draft, position) => ({
+      identifier: normaliseIdentifier(draft.identifier, position),
+      text: draft.text,
+      kind: draft.kind,
+      section: draft.section,
+      citationMarkers: draft.citationMarkers,
+      location: locationByIndex.get(draft.blockIndex) ?? fallbackLocation,
+    }));
+
+  const locatedCount = claims.filter(
+    (claim) => claim.location !== fallbackLocation
+  ).length;
 
   reportActivity(
     writer,
     "success",
     `Found ${claims.length} checkable statements`,
-    `${claims.filter((claim) => claim.citationMarkers.length > 0).length} of them cite a source`
+    `${claims.filter((claim) => claim.citationMarkers.length > 0).length} cite a source, ${locatedCount} located on the page`
   );
 
   return {
@@ -53,4 +89,8 @@ export async function findClaims(
     tokensIn: outcome.value.tokensIn,
     tokensOut: outcome.value.tokensOut,
   };
+}
+
+function normaliseIdentifier(candidate: string, position: number): string {
+  return /^c\d+$/.test(candidate) ? candidate : `c${position + 1}`;
 }
