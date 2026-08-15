@@ -1,10 +1,12 @@
 import type { LangGraphRunnableConfig } from "@langchain/langgraph";
 import type { RunState, RunStateUpdate } from "../state";
+import type { IndexedBlock } from "../sections";
 import { runAgent } from "../../agents/run-agent";
 import { methodWriter } from "../../agents/definitions/method-writer";
 import { methodChecker } from "../../agents/definitions/method-checker";
 import { announceStage, buildEventWriter, reportActivity } from "../writer";
-import { describeBlocks } from "../context";
+import { describeIndexedBlocks } from "../context";
+import { kindsForMethods, selectKinds, splitIntoSections } from "../sections";
 
 export async function checkMethods(
   state: RunState,
@@ -17,7 +19,11 @@ export async function checkMethods(
     return {};
   }
 
-  const methodBlocks = selectMethodBlocks(state.document.textBlocks);
+  const indexed = splitIntoSections(state.document.textBlocks);
+  const methodEntries = selectKinds(indexed, kindsForMethods);
+  const methodBlocks = methodEntries.length > 0
+    ? methodEntries
+    : selectMethodBlocks(indexed);
 
   if (methodBlocks.length === 0) {
     reportActivity(
@@ -44,7 +50,7 @@ export async function checkMethods(
       `Paper title: ${state.paperTitle}`,
       "",
       "Methods text:",
-      describeBlocks(methodBlocks),
+      describeIndexedBlocks(methodBlocks).text,
     ].join("\n"),
     writer,
   });
@@ -74,7 +80,7 @@ export async function checkMethods(
     subject: state.paperTitle,
     userPrompt: [
       "Methods text:",
-      describeBlocks(methodBlocks),
+      describeIndexedBlocks(methodBlocks).text,
       "",
       "Protocol drafted from it:",
       JSON.stringify(protocol, null, 2),
@@ -109,39 +115,10 @@ export async function checkMethods(
   };
 }
 
-function selectMethodBlocks(
-  blocks: NonNullable<RunState["document"]>["textBlocks"]
-): NonNullable<RunState["document"]>["textBlocks"] {
-  const startIndex = blocks.findIndex(
-    (block) =>
-      block.role === "sectionHeading" &&
-      /^(methods?|materials and methods|experimental|methodology)/i.test(
-        block.text.trim()
-      )
+function selectMethodBlocks(indexed: IndexedBlock[]): IndexedBlock[] {
+  return indexed.filter((entry) =>
+    /(we (used|performed|measured|treated|trained|randomi[sz]ed)|were (incubated|assigned|measured|trained))/i.test(
+      entry.block.text
+    )
   );
-
-  if (startIndex === -1) {
-    return blocks.filter((block) =>
-      /\b(we (used|performed|measured|treated|randomi[sz]ed)|were (incubated|assigned|measured))\b/i.test(
-        block.text
-      )
-    );
-  }
-
-  const selected: typeof blocks = [];
-
-  for (let index = startIndex + 1; index < blocks.length; index += 1) {
-    const block = blocks[index];
-
-    if (
-      block.role === "sectionHeading" &&
-      /^(results?|discussion|conclusion)/i.test(block.text.trim())
-    ) {
-      break;
-    }
-
-    selected.push(block);
-  }
-
-  return selected;
 }
