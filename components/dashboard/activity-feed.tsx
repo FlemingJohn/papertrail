@@ -1,6 +1,7 @@
 "use client";
 
 import type { ActivityLine } from "@/lib/client/use-run-stream";
+import { microLabel } from "@/lib/design/tokens";
 import { CheckIcon, InfoIcon, ProblemIcon, WarningIcon } from "./icons";
 
 interface ActivityFeedProps {
@@ -10,23 +11,24 @@ interface ActivityFeedProps {
 export function ActivityFeed({ lines }: ActivityFeedProps) {
   if (lines.length === 0) {
     return (
-      <p className="px-4 py-6 text-sm text-muted-foreground">
+      <p className="py-4 text-sm text-muted-foreground">
         Nothing has happened yet.
       </p>
     );
   }
 
   return (
-    <ul className="divide-y divide-border/30">
+    <ul>
       {lines.map((line) => (
-        <li key={line.key} className="flex gap-2.5 px-4 py-2">
+        <li
+          key={line.key}
+          className="flex gap-3 border-b border-white/10 py-3 last:border-b-0"
+        >
           <LevelMark level={line.level} />
           <div className="min-w-0">
-            <p className="text-sm leading-snug text-foreground">
-              {line.message}
-            </p>
+            <p className="text-sm leading-snug">{line.message}</p>
             {line.detail === null ? null : (
-              <p className="font-mono text-xs leading-snug text-muted-foreground">
+              <p className={`${microLabel} mt-1 normal-case tracking-wider`}>
                 {line.detail}
               </p>
             )}
@@ -49,5 +51,5 @@ function LevelMark({ level }: { level: ActivityLine["level"] }) {
   if (level === "success") {
     return <CheckIcon className={`${className} text-verdict-supported`} />;
   }
-  return <InfoIcon className={`${className} text-muted-foreground/60`} />;
+  return <InfoIcon className={`${className} text-muted-foreground/50`} />;
 }
