@@ -96,6 +96,43 @@ Each agent's output schema is wrapped as `{ thinking, result }`. Because JSON ke
 
 The result is that you watch each specialist think, in its own words, while it works.
 
+## Watching a paper over time
+
+A finished report is stored whole, as a single immutable jsonb row. That matters: when a comparison runs three months later, the earlier side must be what the earlier check actually concluded, not a live join across rows that have since moved.
+
+Papers are keyed by a SHA-256 of the file itself, so uploading the same PDF again adds a second report to the same paper rather than creating a duplicate.
+
+```
+  stored report N-1        stored report N
+          |                       |
+          +----------+------------+
+                     |
+          compare-reports.ts          plain code, no model
+          verdict shifts, retractions,
+          value moves, confidence moves,
+          conflicts opened and closed
+                     |
+              any difference?
+                no |      | yes
+                   |      v
+                   |  change-finder     turns the structural diff into
+                   |                    changes with a stated cause
+                   |      |
+                   |      v
+                   |  change-rater      decides whether a human should
+                   |                    be interrupted
+                   |      |
+                   +------+
+                          v
+                  watch_checks + detected_changes
+```
+
+The split between the two agents is the same separation used everywhere else in the system: one finds what is true, the other decides what it means. Keeping them apart is what stops every small update from becoming a notification.
+
+The diff itself is deliberately not an agent. Comparing two verdicts for equality is exact, cheap and cannot hallucinate. The model is only asked for the two things code cannot do: explaining what caused a change, and judging whether it matters.
+
+A check needs two stored reports. With one, the watch reports honestly that there is nothing yet to compare against.
+
 ## When things fail
 
 | Situation | What happens |
@@ -107,5 +144,8 @@ The result is that you watch each specialist think, in its own words, while it w
 | Fewer than two comparison papers | Skip conflict detection and record it as a limitation |
 | An agent returns malformed output | Retry with the validation error, up to its retry limit |
 | A review lens fails | The other three still produce a review, and the gap is recorded |
+| The database is unreachable | The check completes and the report is shown; a warning says it was not saved and cannot be watched |
+| A watched paper has only one report | The check reports that there is nothing to compare against yet |
+| The importance rating fails | The changes are surfaced as medium rather than swallowed |
 
 Every degradation appears in the report's limitations list. Nothing fails silently.
