@@ -28,14 +28,23 @@ export function buildReport(state: RunState): Report {
       comparisonPapersUsed: state.comparisonPapers.length,
       fullTextAvailable,
     },
-    claims: state.claims,
-    citationChecks: state.citationChecks,
-    measurements: state.measurements,
+    claims: keepFirstByKey(state.claims, (claim) => claim.identifier),
+    citationChecks: keepFirstByKey(
+      state.citationChecks,
+      (check) => `${check.claimIdentifier}|${check.marker}`
+    ),
+    measurements: keepFirstByKey(
+      state.measurements,
+      (measurement) => measurement.claimIdentifier
+    ),
     methodProtocol: state.methodProtocol,
     missingDetails: state.missingDetails,
     conflicts: state.conflicts,
     review: state.reviewSummary,
-    confidenceRatings: state.confidenceRatings,
+    confidenceRatings: keepFirstByKey(
+      state.confidenceRatings,
+      (rating) => rating.claimIdentifier
+    ),
     comparisonPapers: state.comparisonPapers,
     narrative: state.narrative,
     spend: {
@@ -48,13 +57,54 @@ export function buildReport(state: RunState): Report {
       toolCallCount: toolSummary.totalCalls,
       cacheHitCount: toolSummary.cacheHits,
     },
-    limitations: state.limitations,
+    limitations: removeRepeatedLimitations(state.limitations),
   };
 
   return {
     ...report,
     fingerprint: fingerprintReport(report),
   };
+}
+
+function keepFirstByKey<Item>(
+  items: Item[],
+  readKey: (item: Item) => string
+): Item[] {
+  const seenKeys = new Set<string>();
+  const kept: Item[] = [];
+
+  for (const item of items) {
+    const key = readKey(item);
+
+    if (seenKeys.has(key)) {
+      continue;
+    }
+
+    seenKeys.add(key);
+    kept.push(item);
+  }
+
+  return kept;
+}
+
+function removeRepeatedLimitations(
+  limitations: RunState["limitations"]
+): RunState["limitations"] {
+  const seenAreas = new Set<string>();
+  const kept: RunState["limitations"] = [];
+
+  for (const limitation of limitations) {
+    const area = limitation.area.toLowerCase();
+
+    if (seenAreas.has(area)) {
+      continue;
+    }
+
+    seenAreas.add(area);
+    kept.push(limitation);
+  }
+
+  return kept;
 }
 
 function fingerprintReport(report: Omit<Report, "fingerprint">): string {
