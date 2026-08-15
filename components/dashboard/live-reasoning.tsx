@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { AgentTrace } from "@/lib/client/use-run-stream";
+import { microLabel, sectionLabel } from "@/lib/design/tokens";
 import { CheckIcon, ProblemIcon, SpinnerIcon, WarningIcon } from "./icons";
 
 interface LiveReasoningProps {
@@ -18,70 +20,60 @@ export function LiveReasoning({ agents }: LiveReasoningProps) {
 
   if (agents.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center border border-border/60 bg-card/40 px-6 py-16 text-center">
-        <p className="max-w-xs text-sm text-muted-foreground">
-          The reasoning of each specialist appears here as it works.
+      <div className="flex h-full flex-col justify-center border-t border-white/10 pt-8">
+        <p className={`${sectionLabel} mb-6`}>The reasoning</p>
+        <p className="max-w-md font-display text-2xl font-light italic leading-snug text-muted-foreground">
+          Each specialist explains itself here, in its own words, while it
+          works.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col border border-border/60 bg-card/40">
-      <header className="flex items-center justify-between border-b border-border/60 px-4 py-3">
-        <h2 className="text-sm tracking-wide text-foreground">
-          What the specialists are thinking
-        </h2>
-        <span className="font-mono text-xs text-muted-foreground">
-          {runningCount} working
-        </span>
-      </header>
+    <div className="flex h-full flex-col border-t border-white/10 pt-8">
+      <div className="mb-6 flex items-baseline justify-between">
+        <p className={sectionLabel}>The reasoning</p>
+        <span className={microLabel}>{runningCount} working</span>
+      </div>
 
-      <div
-        ref={containerRef}
-        className="flex-1 divide-y divide-border/40 overflow-y-auto"
-      >
-        {agents.map((agent) => (
-          <AgentCard
-            key={`${agent.agentName}-${agent.subject}-${agent.startedAt}`}
-            agent={agent}
-          />
-        ))}
+      <div ref={containerRef} className="flex-1 overflow-y-auto pr-1">
+        <AnimatePresence initial={false}>
+          {agents.map((agent) => (
+            <motion.article
+              key={`${agent.agentName}-${agent.subject}-${agent.startedAt}`}
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+              className="border-b border-white/10 py-5"
+            >
+              <div className="mb-3 flex flex-wrap items-baseline gap-3">
+                <StatusMark agent={agent} />
+                <h3 className="font-display text-lg font-light">
+                  {agent.agentLabel}
+                </h3>
+                <span className={microLabel}>{agent.subject}</span>
+              </div>
+
+              <p className="whitespace-pre-wrap pl-7 text-sm leading-relaxed text-muted-foreground">
+                {agent.isRunning
+                  ? agent.thinking
+                  : (agent.conclusion ?? agent.thinking)}
+                {agent.isRunning ? (
+                  <span className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-accent" />
+                ) : null}
+              </p>
+            </motion.article>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   );
 }
 
-function AgentCard({ agent }: { agent: AgentTrace }) {
-  const text = agent.isRunning
-    ? agent.thinking
-    : (agent.conclusion ?? agent.thinking);
-
-  return (
-    <article className="px-4 py-3">
-      <div className="mb-1.5 flex items-baseline gap-2">
-        <StatusMark agent={agent} />
-        <h3 className="text-sm text-foreground">{agent.agentLabel}</h3>
-        <span className="truncate font-mono text-xs text-muted-foreground">
-          {agent.subject}
-        </span>
-      </div>
-
-      <p className="whitespace-pre-wrap pl-6 text-sm leading-relaxed text-muted-foreground">
-        {text.length === 0 ? "Reading…" : text}
-        {agent.isRunning && text.length > 0 ? (
-          <span className="ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-accent" />
-        ) : null}
-      </p>
-    </article>
-  );
-}
-
 function StatusMark({ agent }: { agent: AgentTrace }) {
   if (agent.isRunning) {
-    return (
-      <SpinnerIcon className="size-4 shrink-0 animate-spin text-accent" />
-    );
+    return <SpinnerIcon className="size-4 shrink-0 animate-spin text-accent" />;
   }
 
   if (agent.level === "problem") {
