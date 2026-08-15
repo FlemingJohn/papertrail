@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { buttonSecondary } from "@/lib/design/tokens";
 
 export default function DashboardLayout({
   children,
@@ -8,29 +9,36 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
-          <Link href="/" className="font-display text-lg text-foreground">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-background/90 px-8 py-6 backdrop-blur md:px-12">
+        <nav className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="font-mono text-xs uppercase tracking-[0.3em]"
+          >
             PaperTrail
           </Link>
-          <nav className="flex items-center gap-5">
+
+          <div className="flex items-center gap-8">
             <Link
               href="/check"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
             >
-              Check a paper
+              Check
             </Link>
             <Link
               href="/watchlist"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
             >
               Watchlist
             </Link>
-          </nav>
-        </div>
+            <Link href="/" className={buttonSecondary}>
+              Home
+            </Link>
+          </div>
+        </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-8">{children}</main>
+      <main className="px-8 py-12 md:px-12 md:py-16">{children}</main>
     </div>
   );
 }
