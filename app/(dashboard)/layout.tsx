@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
-import { buttonSecondary } from "@/lib/design/tokens";
+import { DashboardProvider } from "@/lib/client/dashboard-context";
+import { Sidebar } from "@/components/dashboard/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -8,37 +8,13 @@ export default function DashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-background/90 px-8 py-6 backdrop-blur md:px-12">
-        <nav className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="font-mono text-xs uppercase tracking-[0.3em]"
-          >
-            PaperTrail
-          </Link>
-
-          <div className="flex items-center gap-8">
-            <Link
-              href="/check"
-              className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Check
-            </Link>
-            <Link
-              href="/watchlist"
-              className="font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Watchlist
-            </Link>
-            <Link href="/" className={buttonSecondary}>
-              Home
-            </Link>
-          </div>
-        </nav>
-      </header>
-
-      <main className="px-8 py-12 md:px-12 md:py-16">{children}</main>
-    </div>
+    <DashboardProvider>
+      <div className="flex min-h-screen bg-background">
+        <Sidebar />
+        <main className="min-w-0 flex-1 px-8 py-10 md:px-12 md:py-14">
+          {children}
+        </main>
+      </div>
+    </DashboardProvider>
   );
 }
