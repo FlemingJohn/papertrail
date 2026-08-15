@@ -30,7 +30,7 @@ export const runStageSchema = z.enum([
 export type RunStage = z.infer<typeof runStageSchema>;
 
 export const startRunRequestSchema = z.object({
-  documentId: z.string().uuid(),
+  documentId: z.uuid(),
   depth: runDepthSchema.default("standard"),
   comparisonPaperLimit: z.number().int().min(0).max(10).default(5),
   traceSources: z.boolean().default(true),
