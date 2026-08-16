@@ -44,6 +44,7 @@ export interface RunStreamState {
   activeAgentCount: number;
   report: Report | null;
   documentId: string | null;
+  reportId: string | null;
   isFirstReport: boolean;
   errorMessage: string | null;
 }
@@ -65,6 +66,7 @@ const initialState: RunStreamState = {
   activeAgentCount: 0,
   report: null,
   documentId: null,
+  reportId: null,
   isFirstReport: false,
   errorMessage: null,
 };
@@ -297,6 +299,7 @@ function applyFrame(
       return {
         ...current,
         documentId: event.documentId,
+        reportId: event.reportId,
         isFirstReport: event.isFirstReport,
       };
 
