@@ -91,6 +91,46 @@ export async function flushToolCalls(
   }
 }
 
+export async function flushProjectToolCalls(projectId: string): Promise<void> {
+  const batch = pendingWrites.filter(
+    (record) => record.runIdentifier === projectId
+  );
+
+  if (batch.length === 0) {
+    return;
+  }
+
+  for (const record of batch) {
+    const position = pendingWrites.indexOf(record);
+    if (position !== -1) {
+      pendingWrites.splice(position, 1);
+    }
+  }
+
+  try {
+    const { getDatabase } = await import("../database/client");
+    const { toolCalls } = await import("../database/schema");
+
+    await getDatabase()
+      .insert(toolCalls)
+      .values(
+        batch.map((record) => ({
+          runId: null,
+          projectId,
+          nodeName: record.nodeName,
+          agentName: record.agentName,
+          toolName: record.toolName,
+          inputFingerprint: record.inputFingerprint,
+          status: record.status,
+          latencyMilliseconds: record.latencyMilliseconds,
+          servedFromCache: record.servedFromCache,
+        }))
+      );
+  } catch {
+    return;
+  }
+}
+
 export function getToolCallsForRun(runIdentifier: string): ToolCallRecord[] {
   return recentRecords.filter(
     (record) => record.runIdentifier === runIdentifier
