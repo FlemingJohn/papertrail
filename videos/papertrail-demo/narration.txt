@@ -54,17 +54,21 @@ It gathers the papers. Watch this one. It was found, checked against the retract
 
 Now it stops, and it asks me something.
 
-These are the openings it found. Each one is marked by how well the papers actually support it. Green means the papers say this directly. Amber means it read across several papers, and none of them said it outright. Red means it is a guess, and the papers do not carry it.
+Here is the opening it found. It is marked green, which means the papers state this directly, rather than it being something the tool read between the lines or simply guessed. Every opening carries a mark like that, so I can see how much weight to put on it.
 
-I decide which ones are real. The machine does not decide this for me.
+I decide whether it is real. The machine does not decide that for me.
 
-I accept two, and now the interesting agent runs.
+I accept it, and now the agent I am most pleased with runs.
 
 One agent writes proposals. A second agent is told to assume the idea already exists, and to go and find it. It is trying to kill the idea, not defend it.
 
-And here it did. Forty papers searched, and close work already exists. That is a real answer. Finding this out now costs an afternoon. Finding it out in peer review costs a year.
+Look at the pieces each proposal stands on. The green ones come straight from the papers. The red one is an assumption that nothing supports yet, and it says so, out loud, instead of quietly hiding it in the middle of a paragraph.
 
-It also tells me exactly what it searched, and how many papers it looked at, so nothing found never gets mistaken for this is new.
+The first proposal survived. Forty papers searched, and nothing overlapping came back.
+
+The second one did not survive. Close work already exists. That is a real answer, and it is worth having. Finding this out now costs an afternoon. Finding it out in peer review costs a year.
+
+Notice that it always tells me how many papers it actually searched. Nothing found means nothing found in those forty. It never means this idea is new.
 
 The last stop asks whether the plan would actually test the idea, including the one result that would prove it wrong. A plan that cannot fail is not a test.
 
