@@ -25,6 +25,12 @@ export const runStageSchema = z.enum([
   "finding-conflicts",
   "reviewing",
   "writing-report",
+  "mapping-evidence",
+  "finding-gaps",
+  "proposing",
+  "checking-prior-art",
+  "designing-method",
+  "drafting",
 ]);
 
 export type RunStage = z.infer<typeof runStageSchema>;
