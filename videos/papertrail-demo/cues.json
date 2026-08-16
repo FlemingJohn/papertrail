@@ -1,116 +1,172 @@
 {
-  "narrationEndMs": 416957,
+  "narrationEndMs": 478557,
   "cues": [
     {
       "id": "open-sign-in",
-      "label": "STEP 1 OF 8 · SIGN IN",
+      "label": "STEP 1 OF 6 · SIGN IN",
       "phrase": "Now let me show you it running",
-      "startMs": 169288,
-      "endMs": 170325,
-      "windowMs": 1437
+      "startMs": 168375,
+      "endMs": 169400,
+      "windowMs": 4638
     },
     {
       "id": "type-email",
       "label": null,
-      "phrase": "I am signing in with the account you can see on screen",
-      "startMs": 170725,
-      "endMs": 173313,
-      "windowMs": 6025
+      "phrase": "I am typing it out slowly",
+      "startMs": 173013,
+      "endMs": 174500,
+      "windowMs": 7000
     },
     {
       "id": "submit-sign-in",
       "label": null,
-      "phrase": "so you can sign in and try this yourself",
-      "startMs": 176750,
-      "endMs": 178863,
-      "windowMs": 2513
+      "phrase": "This is the real sign in form",
+      "startMs": 180013,
+      "endMs": 181825,
+      "windowMs": 7950
     },
     {
       "id": "open-knowledge",
-      "label": "STEP 2 OF 8 · YOUR PAPERS",
-      "phrase": "This paper is already saved",
-      "startMs": 179263,
-      "endMs": 180713,
-      "windowMs": 20200
+      "label": "STEP 2 OF 6 · YOUR PAPERS",
+      "phrase": "Here are the papers I have saved",
+      "startMs": 187963,
+      "endMs": 189388,
+      "windowMs": 8087
+    },
+    {
+      "id": "open-paper",
+      "label": "STEP 2 OF 6 · INSIDE THE PAPER",
+      "phrase": "Let me open it. This is the paper itself",
+      "startMs": 196050,
+      "endMs": 198588,
+      "windowMs": 10588
     },
     {
       "id": "open-report",
-      "label": "STEP 3 OF 8 · THE REPORT",
+      "label": "STEP 3 OF 6 · THE REPORT",
+      "phrase": "Now here is the report from checking that paper",
+      "startMs": 206638,
+      "endMs": 208963,
+      "windowMs": 9562
+    },
+    {
+      "id": "tab-citations",
+      "label": "STEP 3 OF 6 · CITATIONS",
       "phrase": "Twenty three citations were checked on this paper",
-      "startMs": 199463,
-      "endMs": 202475,
-      "windowMs": 3412
+      "startMs": 216200,
+      "endMs": 218975,
+      "windowMs": 8138
+    },
+    {
+      "id": "tab-numbers",
+      "label": "STEP 3 OF 6 · NUMBERS",
+      "phrase": "Here are the numbers it read",
+      "startMs": 224338,
+      "endMs": 225313,
+      "windowMs": 6300
+    },
+    {
+      "id": "tab-methods",
+      "label": "STEP 3 OF 6 · METHOD",
+      "phrase": "Here is the method, rewritten as steps",
+      "startMs": 230638,
+      "endMs": 233913,
+      "windowMs": 7500
+    },
+    {
+      "id": "tab-conflicts",
+      "label": "STEP 3 OF 6 · CONFLICTS",
+      "phrase": "Here is where the studies disagree with each other",
+      "startMs": 238138,
+      "endMs": 240775,
+      "windowMs": 9619
+    },
+    {
+      "id": "tab-review",
+      "label": "STEP 3 OF 6 · REVIEW",
+      "phrase": "Here is the review, from four specialists",
+      "startMs": 247757,
+      "endMs": 250495,
+      "windowMs": 7800
+    },
+    {
+      "id": "tab-cost",
+      "label": "STEP 3 OF 6 · COST",
+      "phrase": "And here is exactly what the run cost",
+      "startMs": 255557,
+      "endMs": 257732,
+      "windowMs": 7250
     },
     {
       "id": "open-citations",
-      "label": "STEP 4 OF 8 · A CITATION THAT FAILED",
+      "label": "STEP 4 OF 6 · A CITATION THAT FAILED",
       "phrase": "This one did not hold",
-      "startMs": 202875,
-      "endMs": 203813,
-      "windowMs": 4325
+      "startMs": 262807,
+      "endMs": 263695,
+      "windowMs": 4013
     },
     {
       "id": "trace-to-paper",
       "label": null,
       "phrase": "the tool opens the paper at the exact page",
-      "startMs": 207200,
-      "endMs": 209725,
-      "windowMs": 26400
+      "startMs": 266820,
+      "endMs": 269395,
+      "windowMs": 26550
     },
     {
       "id": "start-project",
-      "label": "STEP 5 OF 8 · A RESEARCH QUESTION",
+      "label": "STEP 5 OF 6 · A RESEARCH QUESTION",
       "phrase": "That was the first job. Here is the second",
-      "startMs": 233600,
-      "endMs": 236200,
-      "windowMs": 20182
+      "startMs": 293370,
+      "endMs": 295907,
+      "windowMs": 19900
     },
     {
       "id": "show-gaps",
-      "label": "STEP 6 OF 8 · WHAT IS MISSING",
+      "label": "STEP 5 OF 6 · WHAT IS MISSING",
       "phrase": "Here is the opening it found",
-      "startMs": 253782,
-      "endMs": 255607,
-      "windowMs": 22725
+      "startMs": 313270,
+      "endMs": 315057,
+      "windowMs": 22825
     },
     {
       "id": "show-proposals",
-      "label": "STEP 7 OF 8 · DOES IT ALREADY EXIST",
+      "label": null,
       "phrase": "One agent writes proposals",
-      "startMs": 276507,
-      "endMs": 278157,
-      "windowMs": 31125
+      "startMs": 336095,
+      "endMs": 337820,
+      "windowMs": 30637
     },
     {
       "id": "show-prior-art",
       "label": null,
       "phrase": "The second one did not survive",
-      "startMs": 307632,
-      "endMs": 309320,
-      "windowMs": 35563
+      "startMs": 366732,
+      "endMs": 368645,
+      "windowMs": 36388
     },
     {
       "id": "open-draft",
-      "label": "STEP 8 OF 8 · THE DRAFT",
+      "label": "STEP 6 OF 6 · THE DRAFT",
       "phrase": "Here is the draft",
-      "startMs": 343195,
-      "endMs": 344295,
-      "windowMs": 1512
+      "startMs": 403120,
+      "endMs": 404282,
+      "windowMs": 1575
     },
     {
       "id": "scroll-draft",
       "label": null,
       "phrase": "It has figures and tables",
-      "startMs": 344707,
-      "endMs": 346232,
-      "windowMs": 18950
+      "startMs": 404695,
+      "endMs": 406245,
+      "windowMs": 19075
     },
     {
       "id": "end-demo",
       "label": null,
       "phrase": "Now, does any of this actually work",
-      "startMs": 363657,
-      "endMs": 365320,
+      "startMs": 423770,
+      "endMs": 425345,
       "windowMs": null
     }
   ]
