@@ -28,6 +28,7 @@ const wholePagePolygon = [0, 0, 1, 0, 1, 1, 0, 1];
 export async function gatherPapers(input: {
   projectId: string;
   question: string;
+  field: string;
   paperTarget: number;
   writer: RunEventWriter | null;
 }): Promise<GatherResult> {
@@ -37,8 +38,10 @@ export async function gatherPapers(input: {
     agentName: null,
   };
 
+  const searchQuery = buildSearchQuery(input.question, input.field);
+
   const searchOutcome = await findRelatedPapers.run(
-    { query: input.question, resultLimit: Math.min(25, input.paperTarget * 2) },
+    { query: searchQuery, resultLimit: Math.min(25, input.paperTarget * 2) },
     toolContext
   );
 
@@ -170,6 +173,20 @@ function buildAbstractDocument(
     references: [],
     pageCount: 1,
   };
+}
+
+function buildSearchQuery(question: string, field: string): string {
+  const normalisedField = field.trim().toLowerCase();
+
+  if (normalisedField.length === 0) {
+    return question;
+  }
+
+  if (question.toLowerCase().includes(normalisedField)) {
+    return question;
+  }
+
+  return `${question} ${normalisedField}`;
 }
 
 function hashText(value: string): string {
