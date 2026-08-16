@@ -102,6 +102,8 @@ export function buildLatexDocument(input: DraftInput): DraftOutput {
     "\\usepackage[T1]{fontenc}",
     "\\usepackage[margin=1in]{geometry}",
     "\\usepackage{booktabs}",
+    "\\usepackage{tabularx}",
+    "\\usepackage{array}",
     "\\usepackage{xcolor}",
     "\\usepackage{hyperref}",
     "\\usepackage{abstract}",
