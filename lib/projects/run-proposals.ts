@@ -2,6 +2,7 @@ import type { RunEvent } from "../types/stream";
 import { runAgent } from "../agents/run-agent";
 import { noveltyMaker } from "../agents/definitions/novelty-maker";
 import { priorArtChecker } from "../agents/definitions/prior-art-checker";
+import { flushProjectToolCalls } from "../tools/tool-log";
 import { EventStream, streamWhileRunning } from "./event-stream";
 import { SpendTracker } from "./spend-tracker";
 import {
@@ -181,6 +182,7 @@ export function runProposals(input: ProposalInput): AsyncGenerator<RunEvent> {
     }
 
     await addProjectSpend(input.projectId, tracker.dollars());
+    await flushProjectToolCalls(input.projectId);
     await setProjectStage(
       input.projectId,
       "awaiting-proposal-decision",
