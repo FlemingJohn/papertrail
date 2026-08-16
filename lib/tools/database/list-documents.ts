@@ -44,7 +44,6 @@ export const listDocuments = defineTool({
         pageCount: documents.pageCount,
         addedAt: documents.createdAt,
         extractedContent: documents.extractedContent,
-        checkCount: sql<number>`(select count(*) from ${runs} where ${runs.documentId} = ${documents.id})::int`,
       })
       .from(documents)
       .orderBy(desc(documents.createdAt));
@@ -59,6 +58,11 @@ export const listDocuments = defineTool({
         .orderBy(desc(reports.createdAt))
         .limit(1);
 
+      const counted = await database
+        .select({ total: sql<number>`count(*)::int` })
+        .from(runs)
+        .where(eq(runs.documentId, row.documentId));
+
       const extraction = row.extractedContent;
 
       summaries.push({
@@ -69,7 +73,7 @@ export const listDocuments = defineTool({
         referenceCount: extraction?.references.length ?? 0,
         tableCount: extraction?.tables.length ?? 0,
         addedAt: row.addedAt.toISOString(),
-        checkCount: row.checkCount,
+        checkCount: counted[0]?.total ?? 0,
         latestReportId: latest[0]?.id ?? null,
         problemCount:
           latest[0]?.payload.citationChecks.filter((check) =>
