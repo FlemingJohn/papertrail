@@ -6,7 +6,7 @@ import { findSourceByDoi } from "./external/find-source-by-doi";
 import { findSourceByTitle } from "./external/find-source-by-title";
 import { listSourceReferences } from "./external/list-source-references";
 import { readSourceText } from "./external/read-source-text";
-import { upsertDocument } from "./database/upsert-document";
+import { findStoredExtraction, upsertDocument } from "./database/upsert-document";
 import { finishRunRecord, startRunRecord } from "./database/save-run";
 import { saveReport } from "./database/save-report";
 import { findRecentReports } from "./database/find-recent-reports";
@@ -25,6 +25,7 @@ export const allTools: readonly RegisteredTool[] = [
   listSourceReferences,
   findRelatedPapers,
   upsertDocument,
+  findStoredExtraction,
   startRunRecord,
   finishRunRecord,
   saveReport,
@@ -79,6 +80,7 @@ export const toolLabels: Record<string, string> = {
   list_source_references: "Listing what the source cites",
   find_related_papers: "Searching for related papers",
   database_upsert_document: "Recording the paper",
+  database_find_stored_extraction: "Looking for a stored reading",
   database_start_run: "Starting the run record",
   database_finish_run: "Closing the run record",
   database_save_report: "Storing the report",

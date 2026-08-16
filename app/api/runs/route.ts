@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { runDepthSchema, runDepthSettings } from "@/lib/schemas/run";
 import { executeRun } from "@/lib/runs/execute-run";
 import { persistRun } from "@/lib/runs/persist-run";
+import { findStoredExtraction } from "@/lib/tools/database/upsert-document";
 import { encodeFrame } from "@/lib/runs/stream-protocol";
 
 export const runtime = "nodejs";
@@ -68,6 +69,15 @@ export async function POST(request: Request): Promise<Response> {
 
   const runIdentifier = randomUUID();
 
+  const cachedOutcome = await findStoredExtraction.run(
+    { contentFingerprint },
+    { runIdentifier: null, nodeName: "runs-api", agentName: null }
+  );
+
+  const cachedDocument = cachedOutcome.successful
+    ? cachedOutcome.value.extractedContent
+    : null;
+
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
@@ -78,6 +88,7 @@ export async function POST(request: Request): Promise<Response> {
           documentIdentifier: randomUUID(),
           paperTitle: file.name.replace(/\.pdf$/i, ""),
           base64Source,
+          cachedDocument,
           depth: depthResult.data,
           comparisonPaperLimit: settings.comparisonPaperLimit,
           shouldTraceSources: depthResult.data !== "quick",
@@ -85,7 +96,11 @@ export async function POST(request: Request): Promise<Response> {
         });
 
         for await (const frame of iterator) {
-          controller.enqueue(encoder.encode(encodeFrame(frame)));
+          controller.enqueue(
+            encoder.encode(
+              encodeFrame({ event: frame.event, report: frame.report })
+            )
+          );
 
           if (frame.report === null) {
             continue;
@@ -96,6 +111,7 @@ export async function POST(request: Request): Promise<Response> {
             contentFingerprint,
             depth: depthResult.data,
             report: frame.report,
+            extracted: frame.extracted ?? null,
           });
 
           controller.enqueue(
