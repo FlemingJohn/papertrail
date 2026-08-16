@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" role="img" aria-label="PaperTrail architecture: checking a paper, and taking a question to a draft">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10z" fill="#5a5a5a"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10z" fill="#22c55e"/>
+    </marker>
+    <style>
+      .h    { font-family: Georgia, 'Times New Roman', serif; fill: #f2f2f2; }
+      .m    { font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace; fill: #7d7d7d; letter-spacing: 2.4px; }
+      .lbl  { font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace; fill: #f2f2f2; letter-spacing: 1.2px; }
+      .body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; fill: #9a9a9a; }
+      .agent{ font-family: ui-monospace, 'Cascadia Mono', Menlo, monospace; fill: #d4d4d4; }
+      .box  { fill: #151515; stroke: #2a2a2a; stroke-width: 1; }
+      .lane { fill: #101820; stroke: #24344a; stroke-width: 1; }
+      .gate { fill: #14100a; stroke: #7a5c1e; stroke-width: 1.2; }
+      .led  { fill: #0f1a12; stroke: #1f4029; stroke-width: 1.2; }
+      .flow { stroke: #5a5a5a; stroke-width: 1.3; fill: none; }
+      .flowB{ stroke: #2563eb; stroke-width: 1.5; fill: none; }
+      .flowG{ stroke: #22c55e; stroke-width: 1.4; fill: none; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#0d0d0d"/>
+
+  <text class="m" x="60" y="52" font-size="13">PAPERTRAIL · ARCHITECTURE</text>
+  <text class="h" x="60" y="92" font-size="30" font-style="italic">Thirty-two agents, one evidence ledger, three places it stops for you.</text>
+  <line x1="60" y1="112" x2="1540" y2="112" stroke="#242424" stroke-width="1"/>
+
+  <!-- ============ LEFT: CHECKING A PAPER ============ -->
+  <text class="m" x="60" y="150" font-size="12" fill="#2563eb">PATH ONE</text>
+  <text class="h" x="60" y="180" font-size="21">Checking a paper you already have</text>
+
+  <rect class="box" x="60" y="204" width="700" height="52" rx="3"/>
+  <text class="lbl" x="80" y="228" font-size="13">PDF UPLOAD</text>
+  <text class="body" x="80" y="246" font-size="12">Azure Document Intelligence · no model call · keeps page and position on every block</text>
+
+  <path class="flow" d="M410 256 L410 282" marker-end="url(#arrow)"/>
+
+  <rect class="box" x="60" y="284" width="700" height="46" rx="3"/>
+  <text class="lbl" x="80" y="307" font-size="13">FIND THE CHECKABLE CLAIMS</text>
+  <text class="agent" x="600" y="307" font-size="12">claim-finder · 1</text>
+
+  <path class="flow" d="M410 330 L410 356" marker-end="url(#arrow)"/>
+  <text class="m" x="60" y="352" font-size="11">FOUR LANES RUN AT ONCE</text>
+
+  <rect class="lane" x="60" y="358" width="166" height="122" rx="3"/>
+  <text class="lbl" x="76" y="380" font-size="12">CITATIONS</text>
+  <text class="agent" x="76" y="400" font-size="11">source-finder</text>
+  <text class="agent" x="76" y="416" font-size="11">challenger ⇄ supporter</text>
+  <text class="agent" x="76" y="432" font-size="11">judge · tracer</text>
+  <text class="body" x="76" y="452" font-size="10.5">two blind arguments,</text>
+  <text class="body" x="76" y="466" font-size="10.5">then a verdict · 5</text>
+
+  <rect class="lane" x="238" y="358" width="166" height="122" rx="3"/>
+  <text class="lbl" x="254" y="380" font-size="12">NUMBERS</text>
+  <text class="agent" x="254" y="400" font-size="11">reader one ∥ two</text>
+  <text class="agent" x="254" y="416" font-size="11">number-judge</text>
+  <text class="body" x="254" y="440" font-size="10.5">read twice, blind,</text>
+  <text class="body" x="254" y="454" font-size="10.5">agreement reported · 3</text>
+
+  <rect class="lane" x="416" y="358" width="166" height="122" rx="3"/>
+  <text class="lbl" x="432" y="380" font-size="12">METHODS</text>
+  <text class="agent" x="432" y="400" font-size="11">method-writer</text>
+  <text class="agent" x="432" y="416" font-size="11">method-checker</text>
+  <text class="body" x="432" y="440" font-size="10.5">what is missing to</text>
+  <text class="body" x="432" y="454" font-size="10.5">repeat the work · 2</text>
+
+  <rect class="lane" x="594" y="358" width="166" height="122" rx="3"/>
+  <text class="lbl" x="610" y="380" font-size="12">RELATED WORK</text>
+  <text class="agent" x="610" y="400" font-size="11">search-planner</text>
+  <text class="agent" x="610" y="416" font-size="11">paper-picker</text>
+  <text class="body" x="610" y="440" font-size="10.5">2–10 comparable</text>
+  <text class="body" x="610" y="454" font-size="10.5">papers · 2</text>
+
+  <path class="flow" d="M143 480 L143 500 L410 500 L410 516" marker-end="url(#arrow)"/>
+  <path class="flow" d="M321 480 L321 500" />
+  <path class="flow" d="M499 480 L499 500" />
+  <path class="flow" d="M677 480 L677 500 L410 500"/>
+
+  <rect class="led" x="60" y="518" width="700" height="48" rx="3"/>
+  <text class="lbl" x="80" y="541" font-size="13" fill="#7fd8a0">THE EVIDENCE LEDGER</text>
+  <text class="body" x="80" y="558" font-size="11.5">typed records, never prose · merge reducers let all four lanes write at once</text>
+
+  <path class="flow" d="M410 566 L410 590" marker-end="url(#arrow)"/>
+
+  <rect class="box" x="60" y="592" width="700" height="46" rx="3"/>
+  <text class="lbl" x="80" y="615" font-size="12">CONFLICTS · REVIEW · REPORT</text>
+  <text class="body" x="80" y="631" font-size="11">grouped disagreements, four review lenses and an arbitrator, then the write-up</text>
+  <text class="agent" x="640" y="615" font-size="11">9 agents</text>
+
+  <path class="flow" d="M410 638 L410 662" marker-end="url(#arrow)"/>
+
+  <rect class="box" x="60" y="664" width="700" height="44" rx="3"/>
+  <text class="lbl" x="80" y="691" font-size="12">A REPORT WHERE EVERY VERDICT HAS A PAGE AND A QUOTATION</text>
+
+  <rect class="box" x="60" y="720" width="700" height="40" rx="3" stroke-dasharray="3 3"/>
+  <text class="lbl" x="80" y="745" font-size="12">WATCH · MONTHLY</text>
+  <text class="body" x="240" y="745" font-size="11">change-finder · change-rater · diffs two frozen reports · 2</text>
+
+  <!-- ============ RIGHT: A QUESTION TO A DRAFT ============ -->
+  <line x1="795" y1="140" x2="795" y2="770" stroke="#242424" stroke-width="1"/>
+
+  <text class="m" x="840" y="150" font-size="12" fill="#eab308">PATH TWO</text>
+  <text class="h" x="840" y="180" font-size="21">A question you have not answered yet</text>
+
+  <rect class="box" x="840" y="204" width="700" height="52" rx="3"/>
+  <text class="lbl" x="860" y="228" font-size="13">A RESEARCH QUESTION · AND THE FIELD IT SITS IN</text>
+  <text class="body" x="860" y="246" font-size="12">the field is asked for, because the same words mean different things elsewhere</text>
+
+  <path class="flow" d="M1190 256 L1190 282" marker-end="url(#arrow)"/>
+
+  <rect class="box" x="840" y="284" width="700" height="46" rx="3"/>
+  <text class="lbl" x="860" y="307" font-size="13">GATHER THE PAPERS</text>
+  <text class="body" x="860" y="323" font-size="11">retracted papers are dropped before anything is read</text>
+  <text class="agent" x="1400" y="307" font-size="11">2 tools</text>
+
+  <path class="flow" d="M1190 330 L1190 352" marker-end="url(#arrow)"/>
+
+  <rect class="box" x="840" y="354" width="700" height="46" rx="3"/>
+  <text class="lbl" x="860" y="377" font-size="13">MAP WHAT IS SETTLED · FIND WHAT IS MISSING</text>
+  <text class="agent" x="1360" y="377" font-size="11">evidence-mapper · gap-finder</text>
+
+  <path class="flowB" d="M1190 400 L1190 422" marker-end="url(#arrowBlue)"/>
+
+  <rect class="gate" x="840" y="424" width="700" height="44" rx="3"/>
+  <circle cx="866" cy="446" r="5" fill="#eab308"/>
+  <text class="lbl" x="884" y="443" font-size="12" fill="#eab308">STOP ONE · WHICH OPENINGS ARE REAL</text>
+  <text class="body" x="884" y="459" font-size="10.5">each marked grounded, inferred or speculative · you decide, not the machine</text>
+
+  <path class="flowB" d="M1190 468 L1190 490" marker-end="url(#arrowBlue)"/>
+
+  <rect class="box" x="840" y="492" width="700" height="58" rx="3"/>
+  <text class="lbl" x="860" y="514" font-size="13">PROPOSE · THEN TRY TO KILL IT</text>
+  <text class="body" x="860" y="531" font-size="11">one agent proposes, another assumes it already exists and goes looking</text>
+  <text class="body" x="860" y="545" font-size="11">it reports how many works it actually searched, so nothing found is never novelty</text>
+  <text class="agent" x="1330" y="514" font-size="11">novelty-maker ⇄ prior-art-checker</text>
+
+  <path class="flowB" d="M1190 550 L1190 572" marker-end="url(#arrowBlue)"/>
+
+  <rect class="gate" x="840" y="574" width="700" height="44" rx="3"/>
+  <circle cx="866" cy="596" r="5" fill="#eab308"/>
+  <text class="lbl" x="884" y="593" font-size="12" fill="#eab308">STOP TWO · WHICH PROPOSAL IS WORTH THE YEAR</text>
+  <text class="body" x="884" y="609" font-size="10.5">you see the overlapping papers before you commit to anything</text>
+
+  <path class="flowB" d="M1190 618 L1190 640" marker-end="url(#arrowBlue)"/>
+
+  <rect class="box" x="840" y="642" width="700" height="44" rx="3"/>
+  <text class="lbl" x="860" y="664" font-size="13">DESIGN THE TEST</text>
+  <text class="body" x="860" y="679" font-size="11">steps, what is measured, and the one result that would prove it wrong</text>
+  <text class="agent" x="1410" y="664" font-size="11">method-designer</text>
+
+  <path class="flowB" d="M1190 686 L1190 704" marker-end="url(#arrowBlue)"/>
+
+  <rect class="gate" x="840" y="706" width="700" height="30" rx="3"/>
+  <circle cx="866" cy="721" r="5" fill="#eab308"/>
+  <text class="lbl" x="884" y="726" font-size="12" fill="#eab308">STOP THREE · WOULD THIS ACTUALLY TEST IT</text>
+
+  <path class="flowG" d="M1190 736 L1190 752" marker-end="url(#arrowGreen)"/>
+
+  <rect class="led" x="840" y="754" width="700" height="44" rx="3"/>
+  <text class="lbl" x="860" y="776" font-size="12" fill="#7fd8a0">A DRAFT THAT CAN ONLY CITE WHAT SURVIVED CHECKING</text>
+  <text class="body" x="860" y="791" font-size="10.5">figures and tables drawn in code · invented citations stripped and marked · LaTeX and PDF</text>
+  <text class="agent" x="1300" y="776" font-size="10.5">table · diagram · paper-writer</text>
+
+  <!-- ============ FOOTER ============ -->
+  <line x1="60" y1="826" x2="1540" y2="826" stroke="#242424" stroke-width="1"/>
+  <text class="lbl" x="60" y="856" font-size="14">32 AGENTS · 24 TOOLS · 6 AGENT-CALLABLE · 1 MCP SERVER · 3 HUMAN STOPS</text>
+  <text class="m" x="60" y="878" font-size="11">TWENTY-SIX OF THE THIRTY-TWO HAVE NO TOOLS AT ALL</text>
+  <text class="m" x="1540" y="856" font-size="11" text-anchor="end">OPENALEX · CROSSREF · EUROPE PMC</text>
+  <text class="m" x="1540" y="878" font-size="11" text-anchor="end">LANGGRAPH · GPT-4o · AZURE DOC INTELLIGENCE · NEXT.JS · SUPABASE</text>
+</svg>

@@ -1,0 +1,47 @@
+{
+  "narrationSeconds": 478.557,
+  "clips": [
+    {
+      "id": "01-sign-in",
+      "file": "clips/01-sign-in.mp4",
+      "startsAtSec": 168.375,
+      "durationSec": 19.56
+    },
+    {
+      "id": "02-your-papers",
+      "file": "clips/02-your-papers.mp4",
+      "startsAtSec": 187.963,
+      "durationSec": 18.68
+    },
+    {
+      "id": "03-report-sections",
+      "file": "clips/03-report-sections.mp4",
+      "startsAtSec": 206.638,
+      "durationSec": 56.16
+    },
+    {
+      "id": "04-failed-citation",
+      "file": "clips/04-failed-citation.mp4",
+      "startsAtSec": 262.807,
+      "durationSec": 30.56
+    },
+    {
+      "id": "05-the-project",
+      "file": "clips/05-the-project.mp4",
+      "startsAtSec": 293.37,
+      "durationSec": 42.72
+    },
+    {
+      "id": "06-prior-art",
+      "file": "clips/06-prior-art.mp4",
+      "startsAtSec": 336.095,
+      "durationSec": 67
+    },
+    {
+      "id": "07-the-draft",
+      "file": "clips/07-the-draft.mp4",
+      "startsAtSec": 403.12,
+      "durationSec": 20.64
+    }
+  ]
+}
