@@ -234,7 +234,9 @@ npm run mcp                    # expose the lookup tools to any MCP client
 
 ## Test papers
 
-Eight open access PDFs live in `../paper/`, deliberately outside this repository so nothing there is ever mistaken for source. All are freely redistributable.
+Eight open access PDFs are in [`papers/`](papers), ready to upload. All are freely redistributable, so you can test the tool immediately without going to find a paper first.
+
+Add one at `/knowledge`, then check it at `/check`. Start with `raynaud-botulinum-trial.pdf` — at 127 KB it is the cheapest way to confirm the whole pipeline runs.
 
 **Machine learning, from arXiv** — numeric markers, dense results tables, reference lists that often carry no DOI. Good for exercising the title-fallback path and for seeing `Source not found` reported honestly.
 
