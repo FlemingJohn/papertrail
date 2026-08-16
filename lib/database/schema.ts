@@ -139,6 +139,7 @@ export const toolCalls = pgTable(
   {
     id: bigserial("id", { mode: "number" }).primaryKey(),
     runId: uuid("run_id").references(() => runs.id, { onDelete: "cascade" }),
+    projectId: uuid("project_id"),
     nodeName: text("node_name").notNull(),
     agentName: text("agent_name"),
     toolName: text("tool_name").notNull(),
