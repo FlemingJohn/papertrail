@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { Report } from "@/lib/schemas/report";
 import type { ReportSummary } from "@/lib/tools/database/list-reports";
 import { formatDollars } from "@/lib/config/pricing";
 import {
@@ -15,9 +14,8 @@ import {
 } from "@/lib/design/tokens";
 import { ErrorBoundary } from "@/components/dashboard/error-boundary";
 import { ProblemIcon, SpinnerIcon } from "@/components/dashboard/icons";
-import { SummarySection } from "@/components/dashboard/report-sections";
 
-export default function HistoryPage() {
+export default function ReportsPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(
     "loading"
   );
@@ -26,8 +24,6 @@ export default function HistoryPage() {
     message: string;
     detail: string | null;
   } | null>(null);
-  const [openReport, setOpenReport] = useState<Report | null>(null);
-  const [openingId, setOpeningId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -63,23 +59,6 @@ export default function HistoryPage() {
     void load();
   }, [load]);
 
-  async function openOne(reportId: string): Promise<void> {
-    setOpeningId(reportId);
-
-    try {
-      const response = await fetch(`/api/reports/${reportId}`);
-
-      if (!response.ok) {
-        return;
-      }
-
-      const body = (await response.json()) as { report: Report };
-      setOpenReport(body.report);
-    } finally {
-      setOpeningId(null);
-    }
-  }
-
   return (
     <ErrorBoundary>
       <div className="mx-auto max-w-5xl">
@@ -90,7 +69,7 @@ export default function HistoryPage() {
           className="mb-14 flex flex-wrap items-end justify-between gap-6"
         >
           <div>
-            <p className={`${sectionLabel} mb-4`}>History</p>
+            <p className={`${sectionLabel} mb-4`}>Reports</p>
             <h1 className={displayMedium}>Every paper you have checked.</h1>
             <p className="mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Reports are stored whole and never edited, so reopening one shows
@@ -182,45 +161,17 @@ export default function HistoryPage() {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => void openOne(summary.reportId)}
-                  disabled={openingId === summary.reportId}
-                  className={`${buttonQuiet} disabled:opacity-40`}
+                <Link
+                  href={`/reports/${summary.reportId}`}
+                  className={buttonQuiet}
                 >
-                  {openingId === summary.reportId ? "Opening" : "Open"}
-                </button>
+                  Open
+                </Link>
               </li>
             ))}
           </ul>
         )}
 
-        {openReport === null ? null : (
-          <motion.section
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mt-16 border-t border-white/10 pt-10"
-          >
-            <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
-              <div>
-                <p className={`${sectionLabel} mb-3`}>Reopened</p>
-                <h2 className="font-display text-2xl font-light">
-                  {openReport.paperTitle}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpenReport(null)}
-                className={buttonQuiet}
-              >
-                Close
-              </button>
-            </div>
-
-            <SummarySection report={openReport} />
-          </motion.section>
-        )}
       </div>
     </ErrorBoundary>
   );
