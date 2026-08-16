@@ -8,6 +8,7 @@ import { useDashboard } from "@/lib/client/dashboard-context";
 import { formatDollars } from "@/lib/config/pricing";
 import { buttonQuiet, microLabel } from "@/lib/design/tokens";
 import { Logo } from "@/components/logo";
+import { AccountMenu } from "@/components/auth/account-menu";
 import { SpinnerIcon } from "./icons";
 
 interface AccountState {
@@ -23,9 +24,14 @@ const pageNames: Record<string, string> = {
   "/reports": "Reports",
   "/watchlist": "Watchlist",
   "/usage": "Usage",
+  "/projects": "Research a question",
 };
 
-export function DashboardHeader() {
+export function DashboardHeader({
+  accountEmail,
+}: {
+  accountEmail: string | null;
+}) {
   const pathname = usePathname();
   const { run } = useDashboard();
   const [account, setAccount] = useState<AccountState | null>(null);
@@ -89,6 +95,8 @@ export function DashboardHeader() {
         <Link href="/check" className={`${buttonQuiet} hidden sm:inline-block`}>
           New check
         </Link>
+
+        {accountEmail === null ? null : <AccountMenu email={accountEmail} />}
       </div>
     </header>
   );
