@@ -271,3 +271,4 @@ Expect more `Source not found` verdicts on the arXiv papers. That is the referen
 - [Setup](docs/setup.md) — Azure deployments, Supabase, first run
 - [Reproducibility](docs/reproducibility.md) — models, data sources, measured costs, known limits
 - [Deploying](docs/deploying.md) — Vercel, environment values, and the function timeout that matters
+- [Project summary](docs/summary.md) — the 200 word submission summary
