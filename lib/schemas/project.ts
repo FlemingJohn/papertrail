@@ -148,10 +148,41 @@ export const draftSectionsSchema = z.object({
 
 export type DraftSections = z.infer<typeof draftSectionsSchema>;
 
-export const startProjectSchema = z.object({
-  question: z.string().min(12).max(300),
-  domain: researchDomainSchema.default("other"),
-  paperTarget: z.number().int().min(3).max(15).default(10),
-});
+export const startProjectSchema = z
+  .object({
+    question: z.string().min(12).max(300),
+    domain: researchDomainSchema.default("other"),
+    fieldName: z.string().max(60).nullable().default(null),
+    paperTarget: z.number().int().min(3).max(15).default(10),
+  })
+  .refine(
+    (value) =>
+      value.domain !== "other" ||
+      (value.fieldName !== null && value.fieldName.trim().length >= 3),
+    {
+      path: ["fieldName"],
+      message:
+        "Name the field you are working in, so the search knows where to look.",
+    }
+  );
+
+export function describeField(
+  domain: ResearchDomain,
+  fieldName: string | null
+): string {
+  if (fieldName !== null && fieldName.trim().length > 0) {
+    return fieldName.trim();
+  }
+
+  return researchDomainLabels[domain];
+}
+
+export const researchDomainLabels: Record<ResearchDomain, string> = {
+  "machine-learning": "machine learning",
+  clinical: "clinical medicine",
+  biology: "biology",
+  physics: "physics",
+  other: "research",
+};
 
 export type StartProject = z.infer<typeof startProjectSchema>;
