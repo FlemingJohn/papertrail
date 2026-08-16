@@ -19,7 +19,7 @@ export function Footer() {
         transition={{ duration: 0.8 }}
         className="mb-16"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-6">06 — START</p>
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-6">07 — START</p>
 
         <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-light tracking-tight mb-8 text-balance">
           Check a paper you
@@ -27,13 +27,23 @@ export function Footer() {
           <span className="italic">are about to cite.</span>
         </h2>
 
-        <Link
-          href="/check"
-          data-cursor-hover
-          className="inline-block font-mono text-sm tracking-widest uppercase border border-white/20 rounded-full px-8 py-4 hover:bg-white hover:text-black transition-colors duration-500"
-        >
-          Check a paper
-        </Link>
+        <div className="flex flex-wrap gap-4">
+          <Link
+            href="/check"
+            data-cursor-hover
+            className="inline-block font-mono text-sm tracking-widest uppercase border border-white/20 rounded-full px-8 py-4 hover:bg-white hover:text-black transition-colors duration-500"
+          >
+            Check a paper
+          </Link>
+
+          <Link
+            href="/projects/new"
+            data-cursor-hover
+            className="inline-block font-mono text-sm tracking-widest uppercase border border-white/10 rounded-full px-8 py-4 text-muted-foreground hover:border-white/30 hover:text-foreground transition-colors duration-500"
+          >
+            Or start from a question
+          </Link>
+        </div>
       </motion.div>
 
       <div className="grid gap-10 md:grid-cols-3 border-t border-white/10 pt-10">
@@ -66,6 +76,15 @@ export function Footer() {
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Check a paper
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/projects"
+                data-cursor-hover
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Research a question
               </Link>
             </li>
             <li>
