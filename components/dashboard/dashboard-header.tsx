@@ -18,6 +18,7 @@ interface AccountState {
 }
 
 const pageNames: Record<string, string> = {
+  "/knowledge": "Your papers",
   "/check": "Check a paper",
   "/reports": "Reports",
   "/watchlist": "Watchlist",

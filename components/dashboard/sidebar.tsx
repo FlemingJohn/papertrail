@@ -11,6 +11,7 @@ import {
   ChartIcon,
   DocumentIcon,
   ScaleIcon,
+  SearchIcon,
   SpinnerIcon,
   UploadIcon,
 } from "./icons";
@@ -30,11 +31,14 @@ interface NavigationGroup {
 
 const groups: NavigationGroup[] = [
   {
-    label: "Work",
+    label: "Knowledge",
+    items: [{ href: "/knowledge", label: "Your papers", icon: DocumentIcon }],
+  },
+  {
+    label: "Research",
     items: [
-      { href: "/check", label: "Check a paper", icon: UploadIcon },
-      { href: "/reports", label: "Reports", icon: DocumentIcon },
-      { href: "/watchlist", label: "Watchlist", icon: ScaleIcon },
+      { href: "/check", label: "Check a paper", icon: SearchIcon },
+      { href: "/reports", label: "Reports", icon: ScaleIcon },
     ],
   },
   {
