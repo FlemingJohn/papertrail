@@ -11,6 +11,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import type { Report } from "../schemas/report";
+import type { ParsedDocument } from "../schemas/document";
 
 export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -18,6 +19,7 @@ export const documents = pgTable("documents", {
   digitalObjectIdentifier: text("digital_object_identifier"),
   pageCount: integer("page_count").notNull().default(1),
   storagePath: text("storage_path"),
+  extractedContent: jsonb("di_result").$type<ParsedDocument>(),
   contentFingerprint: text("content_fingerprint").notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
