@@ -8,7 +8,7 @@ Upload a PDF. Thirty-two specialists read it, follow every citation back to its 
 
 Then it keeps watching, because evidence moves.
 
-**[Watch the demo](https://youtu.be/3Hfrktyd2w4)** · **[Try it signed in](#try-it-yourself)** · **[Test papers](#test-papers)**
+**[Open the live app](https://papertrail-five-ruby.vercel.app)** · **[Watch the demo](https://youtu.be/3Hfrktyd2w4)** · **[Sign-in details](#try-it-yourself)** · **[Test papers](#test-papers)**
 
 ---
 
@@ -30,10 +30,11 @@ Everything on screen is the real application reading the real database. The narr
 
 ## Try it yourself
 
-A prepared account, already signed up and confirmed:
+It is deployed and running at **https://papertrail-five-ruby.vercel.app**, with a prepared account already signed up and confirmed:
 
 | | |
 | --- | --- |
+| **Address** | [papertrail-five-ruby.vercel.app](https://papertrail-five-ruby.vercel.app) |
 | **Email** | `judge@papertrail.app` |
 | **Password** | `PaperTrail2026` |
 
