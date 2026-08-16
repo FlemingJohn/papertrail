@@ -1,0 +1,89 @@
+Hi, I am Fleming John, and this is PaperTrail.
+
+Let me start with a problem that happens every day in research, and that almost nobody catches.
+
+When a researcher writes a paper, they cite other papers. Often forty of them. Every citation is a promise. It says, this other paper backs up what I just claimed.
+
+Almost nobody checks those promises. Not because researchers are careless, but because checking one properly takes about twenty minutes. You have to find the source, read it, and compare what it really says against what the new paper says it says. Forty citations is more than a day of work, so it does not get done.
+
+So things slip through. A number gets copied across, but the conditions around it quietly fall away. A paper gets retracted years later, and nobody tells the people who already cited it.
+
+PaperTrail checks all of it, and it shows you its work.
+
+It does two jobs.
+
+The first job is checking a paper you already have. You give it a PDF, and it tells you which claims hold up, which do not, and which it could not check at all.
+
+The second job starts from a question you have not answered yet. It reads the field for you, finds what nobody has settled, and helps you write a first draft, using only sources it has already checked.
+
+Both jobs use the same team. Let me show you that team.
+
+There are thirty-two agents. Each one lives in its own file, and each one does a single job.
+
+Four of them work at the same time. One group follows citations. One group reads the numbers. One group looks at the method. And one group gathers similar papers to compare against.
+
+The part I am most pleased with is how a citation gets judged. Instead of asking one agent whether a citation is correct, three agents handle it. The first one argues that the citation fails. The second argues that it holds. Neither can see what the other wrote. Then a third agent reads both arguments and decides. One agent asked to judge its own reading will usually agree with itself. Three agents arguing will not.
+
+The numbers work the same way. Two agents read every number separately, without seeing each other's work. That is exactly how a careful review does it with two people. If the two disagree, a judge settles it from the source, and the disagreement is reported rather than hidden.
+
+Twenty-six of the thirty-two agents cannot reach the internet at all. They only work with evidence that was handed to them. Every outside call goes through one of twenty-four tools, and six of those tools are shared over M C P, so other programs can use them too.
+
+It is built with LangGraph, GPT four o through Azure, Azure Document Intelligence for reading the PDFs, Next dot js for the interface, and Supabase for storage.
+
+Now let me show you it running.
+
+I am signing in with the account you can see on screen. The email and the password are both visible, so you can sign in and try this yourself.
+
+This paper is already saved. It was read once and kept, so checking it again costs less.
+
+I press check, and the agents begin.
+
+What you are looking at now is not a loading bar. That is the real reasoning from each agent, arriving as it works. You can read why it reached every conclusion, while it is reaching it.
+
+Twenty three citations were checked on this paper.
+
+This one did not hold. And here is the part that matters. When I click it, the tool opens the paper at the exact page the sentence came from, and shows me the sentence and the source side by side. Every verdict traces back to a page and a quotation. Nothing is asserted without showing you where it came from.
+
+Some sources sit behind a paywall and simply cannot be read. Those come back marked as could not check. They are never marked as wrong. A tool that hides what it could not do earns more trust than it deserves.
+
+That was the first job. Here is the second.
+
+I type in a research question, and I tell it which field I am working in, so it searches the right literature.
+
+It gathers the papers. Watch this one. It was found, checked against the retraction record, and dropped before anything was built on it.
+
+Now it stops, and it asks me something.
+
+These are the openings it found. Each one is marked by how well the papers actually support it. Green means the papers say this directly. Amber means it read across several papers, and none of them said it outright. Red means it is a guess, and the papers do not carry it.
+
+I decide which ones are real. The machine does not decide this for me.
+
+I accept two, and now the interesting agent runs.
+
+One agent writes proposals. A second agent is told to assume the idea already exists, and to go and find it. It is trying to kill the idea, not defend it.
+
+And here it did. Forty papers searched, and close work already exists. That is a real answer. Finding this out now costs an afternoon. Finding it out in peer review costs a year.
+
+It also tells me exactly what it searched, and how many papers it looked at, so nothing found never gets mistaken for this is new.
+
+The last stop asks whether the plan would actually test the idea, including the one result that would prove it wrong. A plan that cannot fail is not a test.
+
+Only after I approve all three does it write anything.
+
+Here is the draft. It has figures and tables, and it can only cite sources that survived checking. If the writer tries to invent a citation, it is removed and marked in the text, and every source left out is listed with the reason. I can save it as a PDF, or download the LaTeX and open it in Overleaf.
+
+Now, does any of this actually work?
+
+I built a test with twelve papers where I already knew the right answer. Three real retractions. Two made up identifiers. Four genuine citations. Three where the claim did not match the source.
+
+It got eleven of the twelve right, and it cost fourteen cents to run. The one it missed, it marked as could not check, instead of guessing. That is the failure I want.
+
+Building that test also found a real bug. The retraction check was missing two of the most famous retractions in medicine, because one database on its own was not enough. Adding a second one fixed it.
+
+Taking a question all the way to a draft costs about eleven cents.
+
+That is PaperTrail. Thirty-two agents that check whether a paper holds up, and then help you write one that does.
+
+Everything you have seen is running live, and the account on screen will get you in.
+
+Thank you for watching.
