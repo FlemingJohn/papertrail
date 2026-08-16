@@ -25,3 +25,5 @@ videos/*/capture/
 videos/*/output/
 videos/papertrail-film/public/clips/
 videos/papertrail-film/public/narration.mp3
+
+# The published demo film lives in docs/ and is committed on purpose
