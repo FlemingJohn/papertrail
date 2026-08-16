@@ -1,0 +1,14 @@
+{
+  "name": "papertrail-demo-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "narrate": "python generate-narration.py",
+    "cues": "node build-cues.mjs",
+    "record": "node record-demo.mjs",
+    "trim": "node build-demo-clip.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.62.1"
+  }
+}
