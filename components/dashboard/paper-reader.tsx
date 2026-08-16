@@ -106,7 +106,10 @@ export function PaperReader({
                   <button
                     key={pageNumber}
                     type="button"
-                    onClick={() => setActivePage(pageNumber)}
+                    onClick={() => {
+                      setActivePage(pageNumber);
+                      setOpenClaim(null);
+                    }}
                     aria-current={isActive ? "page" : undefined}
                     className={`aspect-3/4 border font-mono text-[10px] transition-colors ${
                       isActive
