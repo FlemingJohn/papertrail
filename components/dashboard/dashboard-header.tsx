@@ -58,7 +58,7 @@ export function DashboardHeader() {
         </span>
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4">
         {run.status === "running" ? (
           <span className="hidden items-center gap-2 md:flex">
             <SpinnerIcon className="size-3.5 animate-spin text-accent" />
@@ -67,10 +67,7 @@ export function DashboardHeader() {
         ) : null}
 
         {account === null ? null : (
-          <span className="hidden items-center gap-2 lg:flex">
-            <span className="size-1.5 rounded-full bg-accent" />
-            <span className={microLabel}>{account.modelName}</span>
-          </span>
+          <Reading label="Model" value={account.modelName} />
         )}
 
         {run.status === "idle" ? null : (
@@ -83,11 +80,8 @@ export function DashboardHeader() {
 
         {account === null || account.totalDollars === null ? null : (
           <Reading
-            label={
-              account.runCount === 1 ? "1 run total" : `${account.runCount} runs total`
-            }
+            label={account.runCount === 1 ? "1 run" : `${account.runCount} runs`}
             value={formatDollars(account.totalDollars)}
-            isLive={false}
           />
         )}
 
@@ -102,20 +96,20 @@ export function DashboardHeader() {
 function Reading({
   label,
   value,
-  isLive,
+  isLive = false,
 }: {
   label: string;
   value: string;
-  isLive: boolean;
+  isLive?: boolean;
 }) {
   return (
-    <span className="hidden text-right sm:block">
-      <span className={`${microLabel} block leading-none`}>{label}</span>
+    <span className="hidden items-baseline gap-2 border-l border-white/10 pl-4 lg:flex">
+      <span className={microLabel}>{label}</span>
       <motion.span
         key={value}
         initial={isLive ? { opacity: 0.55 } : false}
         animate={{ opacity: 1 }}
-        className="block font-display text-lg font-light leading-tight"
+        className="font-mono text-xs text-foreground tabular-nums"
       >
         {value}
       </motion.span>
