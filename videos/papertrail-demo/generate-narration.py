@@ -33,9 +33,11 @@ async def main() -> None:
             start_ms = chunk["offset"] / TICKS_PER_SECOND * 1000
             end_ms = (chunk["offset"] + chunk["duration"]) / TICKS_PER_SECOND * 1000
 
+            spoken = chunk["text"]
+
             captions.append(
                 {
-                    "text": chunk["text"],
+                    "text": spoken if not captions else f" {spoken}",
                     "startMs": round(start_ms, 2),
                     "endMs": round(end_ms, 2),
                     "timestampMs": round((start_ms + end_ms) / 2, 2),
