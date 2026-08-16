@@ -27,7 +27,7 @@ export async function checkCitations(
 
   const referencesByMarker = new Map(
     state.document.references.map((reference) => [
-      reference.marker,
+      normaliseMarker(reference.marker),
       reference.rawText,
     ])
   );
@@ -47,7 +47,7 @@ export async function checkCitations(
 
         tasks.push({
           claimIdentifier: claim.identifier,
-          marker: singleMarker,
+          marker: `[${singleMarker}]`,
           rawReference,
         });
       }
@@ -126,17 +126,30 @@ export async function checkCitations(
   };
 }
 
-function splitMarker(marker: string): string[] {
-  const inner = marker.replace(/[[\]]/g, "");
+function normaliseMarker(marker: string): string {
+  return marker
+    .trim()
+    .replace(/^[[({]+/, "")
+    .replace(/[\])}]+$/, "")
+    .replace(/[.,;]+$/, "")
+    .trim();
+}
 
-  if (!inner.includes(",")) {
-    return [marker];
+function splitMarker(marker: string): string[] {
+  const inner = normaliseMarker(marker);
+
+  if (inner.length === 0) {
+    return [];
+  }
+
+  if (!/[,;]/.test(inner)) {
+    return [inner];
   }
 
   return inner
-    .split(",")
-    .map((part) => `[${part.trim()}]`)
-    .filter((part) => part.length > 2);
+    .split(/[,;]/)
+    .map((part) => normaliseMarker(part))
+    .filter((part) => part.length > 0);
 }
 
 function reportProblems(
