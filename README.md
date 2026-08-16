@@ -20,7 +20,7 @@ An eight minute walkthrough: the problem, the thirty-two agents, both halves of 
 
 **[Watch on YouTube](https://youtu.be/3Hfrktyd2w4)** · [download the file](docs/papertrail-demo.mp4)
 
-[![Watch the demo](https://img.youtube.com/vi/3Hfrktyd2w4/maxresdefault.jpg)](https://youtu.be/3Hfrktyd2w4)
+[![Watch the demo](https://img.youtube.com/vi/3Hfrktyd2w4/hqdefault.jpg)](https://youtu.be/3Hfrktyd2w4)
 
 Everything on screen is the real application reading the real database. The narration was written first so the cursor arrives as each sentence lands; nothing is sped up and no frame is staged.
 
