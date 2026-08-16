@@ -10,30 +10,65 @@ export const cuePlan = [
   {
     id: "open-sign-in",
     phrase: "Now let me show you it running",
-    label: "STEP 1 OF 8 · SIGN IN",
+    label: "STEP 1 OF 6 · SIGN IN",
   },
   {
     id: "type-email",
-    phrase: "I am signing in with the account you can see on screen",
+    phrase: "I am typing it out slowly",
   },
   {
     id: "submit-sign-in",
-    phrase: "so you can sign in and try this yourself",
+    phrase: "This is the real sign in form",
   },
   {
     id: "open-knowledge",
-    phrase: "This paper is already saved",
-    label: "STEP 2 OF 8 · YOUR PAPERS",
+    phrase: "Here are the papers I have saved",
+    label: "STEP 2 OF 6 · YOUR PAPERS",
+  },
+  {
+    id: "open-paper",
+    phrase: "Let me open it. This is the paper itself",
+    label: "STEP 2 OF 6 · INSIDE THE PAPER",
   },
   {
     id: "open-report",
+    phrase: "Now here is the report from checking that paper",
+    label: "STEP 3 OF 6 · THE REPORT",
+  },
+  {
+    id: "tab-citations",
     phrase: "Twenty three citations were checked on this paper",
-    label: "STEP 3 OF 8 · THE REPORT",
+    label: "STEP 3 OF 6 · CITATIONS",
+  },
+  {
+    id: "tab-numbers",
+    phrase: "Here are the numbers it read",
+    label: "STEP 3 OF 6 · NUMBERS",
+  },
+  {
+    id: "tab-methods",
+    phrase: "Here is the method, rewritten as steps",
+    label: "STEP 3 OF 6 · METHOD",
+  },
+  {
+    id: "tab-conflicts",
+    phrase: "Here is where the studies disagree with each other",
+    label: "STEP 3 OF 6 · CONFLICTS",
+  },
+  {
+    id: "tab-review",
+    phrase: "Here is the review, from four specialists",
+    label: "STEP 3 OF 6 · REVIEW",
+  },
+  {
+    id: "tab-cost",
+    phrase: "And here is exactly what the run cost",
+    label: "STEP 3 OF 6 · COST",
   },
   {
     id: "open-citations",
     phrase: "This one did not hold",
-    label: "STEP 4 OF 8 · A CITATION THAT FAILED",
+    label: "STEP 4 OF 6 · A CITATION THAT FAILED",
   },
   {
     id: "trace-to-paper",
@@ -42,17 +77,16 @@ export const cuePlan = [
   {
     id: "start-project",
     phrase: "That was the first job. Here is the second",
-    label: "STEP 5 OF 8 · A RESEARCH QUESTION",
+    label: "STEP 5 OF 6 · A RESEARCH QUESTION",
   },
   {
     id: "show-gaps",
     phrase: "Here is the opening it found",
-    label: "STEP 6 OF 8 · WHAT IS MISSING",
+    label: "STEP 5 OF 6 · WHAT IS MISSING",
   },
   {
     id: "show-proposals",
     phrase: "One agent writes proposals",
-    label: "STEP 7 OF 8 · DOES IT ALREADY EXIST",
   },
   {
     id: "show-prior-art",
@@ -61,7 +95,7 @@ export const cuePlan = [
   {
     id: "open-draft",
     phrase: "Here is the draft",
-    label: "STEP 8 OF 8 · THE DRAFT",
+    label: "STEP 6 OF 6 · THE DRAFT",
   },
   {
     id: "scroll-draft",
