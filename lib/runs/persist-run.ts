@@ -4,8 +4,10 @@ import { fail, succeed, type Outcome } from "../types/failure";
 import { upsertDocument } from "../tools/database/upsert-document";
 import { finishRunRecord, startRunRecord } from "../tools/database/save-run";
 import { saveReport } from "../tools/database/save-report";
+import { flushToolCalls } from "../tools/tool-log";
 
 export interface PersistRunInput {
+  graphRunIdentifier: string;
   contentFingerprint: string;
   depth: RunDepth;
   report: Report;
@@ -62,6 +64,8 @@ export async function persistRun(
   if (!reportOutcome.successful) {
     return fail("database-error", reportOutcome.failure.message);
   }
+
+  await flushToolCalls(input.graphRunIdentifier, runOutcome.value.runId);
 
   await finishRunRecord.run(
     {

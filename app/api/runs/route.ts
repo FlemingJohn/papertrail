@@ -92,6 +92,7 @@ export async function POST(request: Request): Promise<Response> {
           }
 
           const stored = await persistRun({
+            graphRunIdentifier: runIdentifier,
             contentFingerprint,
             depth: depthResult.data,
             report: frame.report,
