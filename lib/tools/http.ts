@@ -11,6 +11,8 @@ const baseBackoffMilliseconds = 800;
 
 const maximumBackoffMilliseconds = 8000;
 
+const worthWaitingMilliseconds = 30000;
+
 function buildTarget(url: string, options: RequestOptions): URL {
   const target = new URL(url);
 
@@ -35,7 +37,7 @@ function readRetryAfter(response: Response): number | null {
   const seconds = Number(header);
 
   if (Number.isFinite(seconds)) {
-    return Math.min(seconds * 1000, maximumBackoffMilliseconds);
+    return seconds * 1000;
   }
 
   const when = Date.parse(header);
@@ -44,7 +46,18 @@ function readRetryAfter(response: Response): number | null {
     return null;
   }
 
-  return Math.min(Math.max(when - Date.now(), 0), maximumBackoffMilliseconds);
+  return Math.max(when - Date.now(), 0);
+}
+
+function describeDuration(milliseconds: number): string {
+  const totalMinutes = Math.round(milliseconds / 60000);
+
+  if (totalMinutes < 60) {
+    return `${totalMinutes} ${totalMinutes === 1 ? "minute" : "minutes"}`;
+  }
+
+  const hours = Math.round(totalMinutes / 60);
+  return `${hours} ${hours === 1 ? "hour" : "hours"}`;
 }
 
 function waitFor(milliseconds: number): Promise<void> {
@@ -78,6 +91,13 @@ async function requestWithBackoff(
     }
 
     const suggested = readRetryAfter(response);
+
+    if (suggested !== null && suggested > worthWaitingMilliseconds) {
+      throw new Error(
+        `${target.hostname} has no request budget left and will not accept another call for ${describeDuration(suggested)}. This lookup was left unchecked rather than guessed. The budget resets on their schedule, not ours.`
+      );
+    }
+
     const backoff =
       suggested ??
       Math.min(
