@@ -8,6 +8,12 @@ const recentRecords: ToolCallRecord[] = [];
 
 const maximumRecentRecords = 500;
 
+const pendingWrites: ToolCallRecord[] = [];
+
+const writeBatchSize = 25;
+
+let isFlushing = false;
+
 export function addToolCallListener(listener: ToolCallListener): () => void {
   listeners.add(listener);
   return () => {
@@ -28,6 +34,60 @@ export async function recordToolCall(record: ToolCallRecord): Promise<void> {
     } catch {
       continue;
     }
+  }
+
+  if (record.runIdentifier !== null) {
+    pendingWrites.push(record);
+  }
+}
+
+export async function flushToolCalls(
+  graphRunIdentifier: string,
+  storedRunIdentifier: string
+): Promise<void> {
+  if (isFlushing) {
+    return;
+  }
+
+  const batch = pendingWrites.filter(
+    (record) => record.runIdentifier === graphRunIdentifier
+  );
+
+  if (batch.length === 0) {
+    return;
+  }
+
+  for (const record of batch) {
+    const position = pendingWrites.indexOf(record);
+    if (position !== -1) {
+      pendingWrites.splice(position, 1);
+    }
+  }
+
+  isFlushing = true;
+
+  try {
+    const { getDatabase } = await import("../database/client");
+    const { toolCalls } = await import("../database/schema");
+
+    await getDatabase()
+      .insert(toolCalls)
+      .values(
+        batch.map((record) => ({
+          runId: storedRunIdentifier,
+          nodeName: record.nodeName,
+          agentName: record.agentName,
+          toolName: record.toolName,
+          inputFingerprint: record.inputFingerprint,
+          status: record.status,
+          latencyMilliseconds: record.latencyMilliseconds,
+          servedFromCache: record.servedFromCache,
+        }))
+      );
+  } catch {
+    return;
+  } finally {
+    isFlushing = false;
   }
 }
 
