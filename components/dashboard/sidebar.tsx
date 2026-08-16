@@ -8,10 +8,8 @@ import { useDashboard } from "@/lib/client/dashboard-context";
 import { formatDollars } from "@/lib/config/pricing";
 import { microLabel } from "@/lib/design/tokens";
 import {
-  BranchIcon,
   ChartIcon,
   DocumentIcon,
-  LinkIcon,
   ScaleIcon,
   SpinnerIcon,
   UploadIcon,
@@ -40,17 +38,8 @@ const groups: NavigationGroup[] = [
     ],
   },
   {
-    label: "Inspect",
-    items: [
-      { href: "/usage", label: "Usage", icon: ChartIcon },
-      { href: "/agents", label: "Agents", icon: BranchIcon },
-    ],
-  },
-  {
-    label: "Connect",
-    items: [
-      { href: "/integrations", label: "Integrations", icon: LinkIcon },
-    ],
+    label: "Spend",
+    items: [{ href: "/usage", label: "Usage", icon: ChartIcon }],
   },
 ];
 
