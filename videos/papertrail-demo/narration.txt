@@ -32,15 +32,29 @@ It is built with LangGraph, GPT four o through Azure, Azure Document Intelligenc
 
 Now let me show you it running.
 
-I am signing in with the account you can see on screen. The email and the password are both visible, so you can sign in and try this yourself.
+I am signing in with the account you can see on screen. I am typing it out slowly, and the password is not hidden behind dots, so you can read it and use it yourself.
 
-This paper is already saved. It was read once and kept, so checking it again costs less.
+This is the real sign in form, talking to the real service. Nothing you are about to see is a mock up, and nothing is sped up.
 
-I press check, and the agents begin.
+Here are the papers I have saved. This one is already read. It was read once and kept, so checking it again costs less.
 
-What you are looking at now is not a loading bar. That is the real reasoning from each agent, arriving as it works. You can read why it reached every conclusion, while it is reaching it.
+Let me open it. This is the paper itself. The tool has pulled the text out of the PDF and remembered where every piece of it sits on the page, which is what lets it point back later.
 
-Twenty three citations were checked on this paper.
+Now here is the report from checking that paper.
+
+The findings are split into sections, so nothing important gets buried in a wall of text. Let me walk through them.
+
+Twenty three citations were checked on this paper. Every one of them was followed back to the source it points at, and actually read.
+
+Here are the numbers it read, each one read twice over by two agents that could not see each other's work.
+
+Here is the method, rewritten as steps somebody could actually follow, with the missing pieces listed underneath it.
+
+Here is where the studies disagree with each other. It groups them by what they found, instead of averaging the disagreement away into one tidy answer.
+
+Here is the review, from four specialists that each look at one thing only, and a fifth that settles the argument between them.
+
+And here is exactly what the run cost, down to the token, because a tool that hides what it spends is not one you can plan around.
 
 This one did not hold. And here is the part that matters. When I click it, the tool opens the paper at the exact page the sentence came from, and shows me the sentence and the source side by side. Every verdict traces back to a page and a quotation. Nothing is asserted without showing you where it came from.
 
