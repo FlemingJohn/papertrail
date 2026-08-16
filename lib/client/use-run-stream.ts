@@ -87,7 +87,7 @@ export function useRunStream() {
   }, []);
 
   const start = useCallback(
-    async (file: File, depth: RunDepth) => {
+    async (documentId: string, depth: RunDepth) => {
       abortRef.current?.abort();
 
       const controller = new AbortController();
@@ -96,16 +96,13 @@ export function useRunStream() {
 
       setState({ ...initialState, status: "running" });
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("depth", depth);
-
       let response: Response;
 
       try {
         response = await fetch("/api/runs", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documentId, depth }),
           signal: controller.signal,
         });
       } catch (error) {

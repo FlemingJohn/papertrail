@@ -24,7 +24,7 @@ export type DashboardView =
 
 interface DashboardValue {
   run: RunStreamState;
-  startRun: (file: File, depth: RunDepth) => Promise<void>;
+  startRun: (documentId: string, depth: RunDepth) => Promise<void>;
   cancelRun: () => void;
   activeView: DashboardView;
   setActiveView: (view: DashboardView) => void;
@@ -88,9 +88,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const value = useMemo<DashboardValue>(
     () => ({
       run: state,
-      startRun: async (file, depth) => {
+      startRun: async (documentId, depth) => {
         setActiveView("check");
-        await start(file, depth);
+        await start(documentId, depth);
       },
       cancelRun: cancel,
       activeView,
