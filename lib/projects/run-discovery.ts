@@ -3,6 +3,7 @@ import type { Report } from "../schemas/report";
 import { runAgent } from "../agents/run-agent";
 import { evidenceMapper } from "../agents/definitions/evidence-mapper";
 import { gapFinder } from "../agents/definitions/gap-finder";
+import { flushProjectToolCalls } from "../tools/tool-log";
 import { EventStream, streamWhileRunning } from "./event-stream";
 import { gatherPapers, type GatheredPaper } from "./gather-papers";
 import { SpendTracker } from "./spend-tracker";
@@ -181,6 +182,7 @@ export function runDiscovery(input: DiscoveryInput): AsyncGenerator<RunEvent> {
 
     await replaceGaps(input.projectId, gapOutcome.value.output.gaps);
     await addProjectSpend(input.projectId, tracker.dollars());
+    await flushProjectToolCalls(input.projectId);
     await setProjectStage(input.projectId, "awaiting-gap-decision", "waiting");
 
     stream.emit({
