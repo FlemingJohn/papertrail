@@ -57,13 +57,19 @@ Create a project at supabase.com, then run the migration. Either paste `supabase
 npm run database:push
 ```
 
-Copy three values from Project Settings:
+Run every migration in `supabase/migrations/` in order, not only the first one. `0003` adds the project tables, `0006` the project field.
+
+Copy these values from Project Settings:
 
 | Name | Where |
 | --- | --- |
 | `SUPABASE_URL` | API, Project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | API, service role key. Server only, never expose it to the browser |
 | `DATABASE_URL` | Database, connection string. Use the **pooled** connection on port 6543 |
+| `NEXT_PUBLIC_SUPABASE_URL` | The same project URL. This one reaches the browser, which is fine |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | API keys, the `sb_publishable_...` key. Safe in the browser by design |
+
+The two `NEXT_PUBLIC_` values are what signing in uses. Without them the app still builds and the landing page still works, but every dashboard page is unreachable because nobody can sign in.
 
 Use the pooled connection string. Serverless functions open and close connections constantly, and the direct connection on port 5432 will exhaust its limit under any real use.
 
@@ -71,7 +77,26 @@ Storing reports is what makes watching possible. A check compares the newest sto
 
 If the database is not reachable, checking a paper still works end to end. The report appears as normal and a warning says it was not saved. Only watching is unavailable.
 
-## 5. Run it
+## 5. Accounts
+
+Anyone can create an account from `/sign-up`. Whether they can use it immediately depends on one setting in Supabase, under Authentication, Providers, Email:
+
+- **Confirm email on** (the default): signing up sends a confirmation link, and the app says to check the inbox. This is the right setting for anything public.
+- **Confirm email off**: signing up drops you straight into the dashboard. Useful while developing, and for a demo where waiting on an inbox would be awkward.
+
+To create an account without going through the form, use the Admin API with the project's **secret** key:
+
+```bash
+curl -X POST "https://<project-ref>.supabase.co/auth/v1/admin/users"   -H "apikey: $SUPABASE_SECRET_KEY"   -H "Authorization: Bearer $SUPABASE_SECRET_KEY"   -H "Content-Type: application/json"   -d '{"email":"you@example.com","password":"a-long-password","email_confirm":true}'
+```
+
+`email_confirm: true` marks the address as already verified, so the account can sign in straight away regardless of the setting above. The secret key is server-side only; never put it in `NEXT_PUBLIC_`.
+
+Signing in is enforced in `proxy.ts`. The landing page is public; everything under the dashboard is not, and a signed-out visitor is sent to `/sign-in` with the page they wanted preserved so they land there afterwards.
+
+**On session checks.** The proxy and every server component use `getClaims()`, which verifies the token signature. `getSession()` reads local storage without revalidating, so it must never be what a protected page trusts.
+
+## 6. Run it
 
 ```bash
 npm install
@@ -88,7 +113,7 @@ Open `http://localhost:3000/check`, drop in a PDF and choose a depth.
 
 Start with Quick on a short open access paper to confirm your keys work before spending on a full run.
 
-## 6. Checks before committing
+## 7. Checks before committing
 
 ```bash
 npm run typecheck
