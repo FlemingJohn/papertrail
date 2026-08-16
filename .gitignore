@@ -10,3 +10,18 @@ build/
 next-env.d.ts
 .DS_Store
 drizzle/meta/
+
+# Local agent tooling
+.claude/
+.agents/
+
+# Scratch files
+*.tmp
+*.tmp.*
+cookie.tmp
+
+# Video capture and derived clips are large and regenerable
+videos/*/capture/
+videos/*/output/
+videos/papertrail-film/public/clips/
+videos/papertrail-film/public/narration.mp3
