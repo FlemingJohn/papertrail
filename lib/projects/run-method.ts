@@ -1,6 +1,7 @@
 import type { RunEvent } from "../types/stream";
 import { runAgent } from "../agents/run-agent";
 import { methodDesigner } from "../agents/definitions/method-designer";
+import { flushProjectToolCalls } from "../tools/tool-log";
 import { EventStream, streamWhileRunning } from "./event-stream";
 import { SpendTracker } from "./spend-tracker";
 import {
@@ -103,6 +104,7 @@ export function runMethod(input: MethodInput): AsyncGenerator<RunEvent> {
     const method = methodOutcome.value.output;
     await recordMethod(chosen.proposalId, method);
     await addProjectSpend(input.projectId, tracker.dollars());
+    await flushProjectToolCalls(input.projectId);
     await setProjectStage(
       input.projectId,
       "awaiting-method-decision",
