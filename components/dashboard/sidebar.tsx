@@ -33,7 +33,7 @@ const groups: NavigationGroup[] = [
     label: "Work",
     items: [
       { href: "/check", label: "Check a paper", icon: UploadIcon },
-      { href: "/history", label: "History", icon: DocumentIcon },
+      { href: "/reports", label: "Reports", icon: DocumentIcon },
       { href: "/watchlist", label: "Watchlist", icon: ScaleIcon },
     ],
   },
@@ -71,7 +71,11 @@ export function Sidebar() {
                 <li key={item.href}>
                   <SidebarLink
                     href={item.href}
-                    isActive={pathname === item.href}
+                    isActive={
+                      item.href === "/check"
+                        ? pathname === item.href
+                        : pathname.startsWith(item.href)
+                    }
                     isSidebarOpen={isSidebarOpen}
                     onSelect={
                       item.href === "/check"
