@@ -82,13 +82,13 @@ export const readReport = defineTool({
   name: "database_read_report",
   description: "Read one stored report in full so it can be reopened.",
   inputSchema: z.object({ reportId: z.uuid() }),
-  outputSchema: z.object({ report: reportSchema }),
+  outputSchema: z.object({ report: reportSchema, documentId: z.string() }),
   availableToAgents: false,
   execute: async (input) => {
     const database = getDatabase();
 
     const rows = await database
-      .select({ payload: reports.payload })
+      .select({ payload: reports.payload, documentId: reports.documentId })
       .from(reports)
       .where(eq(reports.id, input.reportId))
       .limit(1);
@@ -97,7 +97,7 @@ export const readReport = defineTool({
       throw new Error(`No stored report with identifier ${input.reportId}`);
     }
 
-    return { report: rows[0].payload };
+    return { report: rows[0].payload, documentId: rows[0].documentId };
   },
 });
 

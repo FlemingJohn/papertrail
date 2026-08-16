@@ -12,3 +12,14 @@ export const loadReport = cache(
     return outcome.successful ? outcome.value.report : null;
   }
 );
+
+export const loadReportPaperId = cache(
+  async (reportId: string): Promise<string | null> => {
+    const outcome = await readReport.run(
+      { reportId },
+      { runIdentifier: null, nodeName: "report-page", agentName: null }
+    );
+
+    return outcome.successful ? outcome.value.documentId : null;
+  }
+);
