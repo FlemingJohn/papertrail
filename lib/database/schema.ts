@@ -6,12 +6,19 @@ import {
   jsonb,
   numeric,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
 import type { Report } from "../schemas/report";
 import type { ParsedDocument } from "../schemas/document";
+import type {
+  ExcludedCitation,
+  PriorArtEntry,
+  ProposalComponent,
+  ProposalMethod,
+} from "../schemas/project";
 
 export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -144,4 +151,126 @@ export const toolCalls = pgTable(
       .defaultNow(),
   },
   (table) => [index("tool_calls_run_index").on(table.runId)]
+);
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    question: text("question").notNull(),
+    domain: text("domain").notNull().default("other"),
+    paperTarget: integer("paper_target").notNull().default(10),
+    stage: text("stage").notNull().default("finding-papers"),
+    status: text("status").notNull().default("running"),
+    costDollars: numeric("cost_dollars", { precision: 12, scale: 6 })
+      .notNull()
+      .default("0"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("projects_created_index").on(table.createdAt)]
+);
+
+export const projectPapers = pgTable(
+  "project_papers",
+  {
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    documentId: uuid("document_id")
+      .notNull()
+      .references(() => documents.id, { onDelete: "cascade" }),
+    reportId: uuid("report_id").references(() => reports.id, {
+      onDelete: "set null",
+    }),
+    addedBy: text("added_by").notNull().default("search"),
+    addedAt: timestamp("added_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.projectId, table.documentId] }),
+    index("project_papers_project_index").on(table.projectId),
+  ]
+);
+
+export const projectGaps = pgTable(
+  "project_gaps",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    position: integer("position").notNull().default(0),
+    support: text("support").notNull().default("speculative"),
+    headline: text("headline").notNull(),
+    evidence: text("evidence").notNull(),
+    decision: text("decision").notNull().default("pending"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("project_gaps_project_index").on(table.projectId, table.position)]
+);
+
+export const projectProposals = pgTable(
+  "project_proposals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    position: integer("position").notNull().default(0),
+    title: text("title").notNull(),
+    summary: text("summary").notNull(),
+    components: jsonb("components").$type<ProposalComponent[]>().notNull().default([]),
+    noveltyVerdict: text("novelty_verdict").notNull().default("not-checked"),
+    worksSearched: integer("works_searched").notNull().default(0),
+    priorArt: jsonb("prior_art").$type<PriorArtEntry[]>().notNull().default([]),
+    priorArtNote: text("prior_art_note"),
+    method: jsonb("method").$type<ProposalMethod | null>(),
+    decision: text("decision").notNull().default("pending"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("project_proposals_project_index").on(table.projectId, table.position),
+  ]
+);
+
+export const projectDrafts = pgTable(
+  "project_drafts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    proposalId: uuid("proposal_id").references(() => projectProposals.id, {
+      onDelete: "set null",
+    }),
+    authorName: text("author_name").notNull(),
+    title: text("title").notNull(),
+    latex: text("latex").notNull(),
+    bibtex: text("bibtex").notNull(),
+    previewHtml: text("preview_html").notNull().default(""),
+    excludedCitations: jsonb("excluded_citations")
+      .$type<ExcludedCitation[]>()
+      .notNull()
+      .default([]),
+    figureCount: integer("figure_count").notNull().default(0),
+    tableCount: integer("table_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("project_drafts_project_index").on(table.projectId, table.createdAt),
+  ]
 );
