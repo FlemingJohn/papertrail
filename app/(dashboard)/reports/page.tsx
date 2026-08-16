@@ -15,6 +15,36 @@ import {
 import { ErrorBoundary } from "@/components/dashboard/error-boundary";
 import { ProblemIcon, SpinnerIcon } from "@/components/dashboard/icons";
 
+interface PaperGroup {
+  documentId: string;
+  title: string;
+  totalDollars: number;
+  runs: ReportSummary[];
+}
+
+function groupByPaper(summaries: ReportSummary[]): PaperGroup[] {
+  const groups = new Map<string, PaperGroup>();
+
+  for (const summary of summaries) {
+    const existing = groups.get(summary.documentId);
+
+    if (existing === undefined) {
+      groups.set(summary.documentId, {
+        documentId: summary.documentId,
+        title: summary.title,
+        totalDollars: summary.costDollars,
+        runs: [summary],
+      });
+      continue;
+    }
+
+    existing.runs.push(summary);
+    existing.totalDollars += summary.costDollars;
+  }
+
+  return [...groups.values()];
+}
+
 export default function ReportsPage() {
   const [status, setStatus] = useState<"loading" | "ready" | "failed">(
     "loading"
@@ -125,51 +155,74 @@ export default function ReportsPage() {
         ) : null}
 
         {summaries.length === 0 ? null : (
-          <ul className="border-t border-white/10">
-            {summaries.map((summary) => (
-              <li
-                key={summary.reportId}
-                className="flex flex-wrap items-start justify-between gap-6 border-b border-white/10 py-6"
+          <div className="border-t border-white/10">
+            {groupByPaper(summaries).map((group) => (
+              <section
+                key={group.documentId}
+                className="border-b border-white/10 py-7"
               >
-                <div className="min-w-0 flex-1">
-                  <div className="mb-2 flex flex-wrap items-center gap-3">
-                    <span className={microLabel}>
-                      {new Date(summary.createdAt).toLocaleDateString()}
-                    </span>
-                    <span className={microLabel}>{summary.depth}</span>
-                    <span className={microLabel}>
-                      {formatDollars(summary.costDollars)}
-                    </span>
+                <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h2 className="mb-1 max-w-2xl font-display text-xl font-light leading-snug">
+                      {group.title}
+                    </h2>
+                    <p className={microLabel}>
+                      {group.runs.length}{" "}
+                      {group.runs.length === 1 ? "check" : "checks"} ·{" "}
+                      {formatDollars(group.totalDollars)} in total
+                    </p>
                   </div>
-
-                  <h2 className="mb-2 max-w-2xl font-display text-xl font-light leading-snug">
-                    {summary.title}
-                  </h2>
-
-                  <p className="text-sm text-muted-foreground">
-                    {summary.claimsFound} claims ·{" "}
-                    {summary.citationsChecked} citations ·{" "}
-                    <span
-                      className={
-                        summary.citationProblems > 0
-                          ? "text-verdict-wrong-source"
-                          : "text-verdict-supported"
-                      }
-                    >
-                      {summary.citationProblems} with problems
-                    </span>
-                  </p>
+                  <Link
+                    href={`/knowledge/${group.documentId}`}
+                    className={buttonQuiet}
+                  >
+                    The paper
+                  </Link>
                 </div>
 
-                <Link
-                  href={`/reports/${summary.reportId}`}
-                  className={buttonQuiet}
-                >
-                  Open
-                </Link>
-              </li>
+                <ul className="space-y-0">
+                  {group.runs.map((summary) => (
+                    <li
+                      key={summary.reportId}
+                      className="flex flex-wrap items-center justify-between gap-4 border-t border-white/5 py-3"
+                    >
+                      <div className="flex flex-wrap items-center gap-4">
+                        <span className={microLabel}>
+                          {new Date(summary.createdAt).toLocaleDateString()}
+                        </span>
+                        <span className={microLabel}>{summary.depth}</span>
+                        <span className={microLabel}>
+                          {formatDollars(summary.costDollars)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {summary.claimsFound} claims ·{" "}
+                          {summary.citationsChecked} citations ·{" "}
+                          <span
+                            className={
+                              summary.citationProblems > 0
+                                ? "text-verdict-wrong-source"
+                                : "text-verdict-supported"
+                            }
+                          >
+                            {summary.citationProblems === 0
+                              ? "all held up"
+                              : `${summary.citationProblems} with problems`}
+                          </span>
+                        </span>
+                      </div>
+
+                      <Link
+                        href={`/reports/${summary.reportId}`}
+                        className={buttonQuiet}
+                      >
+                        Open
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ul>
+          </div>
         )}
 
       </div>
