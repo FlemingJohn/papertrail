@@ -11,6 +11,7 @@ const serverEnvironmentSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   DATABASE_URL: z.string().min(1).optional(),
   OPENALEX_CONTACT_EMAIL: z.email(),
+  OPENALEX_API_KEY: z.string().min(8).optional(),
 });
 
 export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>;
@@ -33,6 +34,7 @@ export function getServerEnvironment(): ServerEnvironment {
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     OPENALEX_CONTACT_EMAIL: process.env.OPENALEX_CONTACT_EMAIL,
+    OPENALEX_API_KEY: process.env.OPENALEX_API_KEY,
   });
 
   if (!parsed.success) {
