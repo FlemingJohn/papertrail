@@ -42,6 +42,8 @@ It is an ordinary account. The application has no role system, so this sees exac
 
 Signed in, there is a checked report waiting (23 citations, 13 with problems) and a finished research project with its openings, proposals, prior-art verdicts and an exported draft.
 
+**One workspace, shared by everyone.** Signing in gates the application, but it does not partition the data: every signed-in account sees the same papers, reports and projects. Nothing in the schema records who added what. That is deliberate here — it means anyone reviewing this can sign in and immediately find a finished report and a finished project rather than an empty screen — but it is a real limitation and would have to be fixed before this went near anyone's private work. See [known limits](docs/reproducibility.md#known-limits).
+
 ---
 
 ## The problem
