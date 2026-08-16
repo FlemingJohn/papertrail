@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 const signedOutOnlyPaths = ["/sign-in", "/sign-up"];
 
-const publicPaths = ["/", "/auth"];
+const publicPaths = ["/", "/auth", "/api/health"];
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -53,11 +53,18 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     (entry) => path === entry || path.startsWith(`${entry}/`)
   );
 
-  if (
-    !isSignedIn &&
-    !isPublic &&
-    !signedOutOnlyPaths.some((entry) => path.startsWith(entry))
-  ) {
+  const isSignedOutOnly = signedOutOnlyPaths.some((entry) =>
+    path.startsWith(entry)
+  );
+
+  if (!isSignedIn && !isPublic && !isSignedOutOnly) {
+    if (path.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: "Sign in to use this. Your session has ended." },
+        { status: 401 }
+      );
+    }
+
     const destination = request.nextUrl.clone();
     destination.pathname = "/sign-in";
     destination.search = `?next=${encodeURIComponent(`${path}${request.nextUrl.search}`)}`;
