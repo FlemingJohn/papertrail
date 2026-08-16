@@ -38,6 +38,7 @@ function NewProjectFlow() {
 
   const [question, setQuestion] = useState("");
   const [domain, setDomain] = useState<ResearchDomain>("machine-learning");
+  const [fieldName, setFieldName] = useState("");
   const [paperTarget, setPaperTarget] = useState(10);
 
   useEffect(() => {
@@ -52,7 +53,10 @@ function NewProjectFlow() {
     return undefined;
   }, [state.status, state.projectId, router]);
 
-  const isReady = question.trim().length >= 12;
+  const needsFieldName = domain === "other";
+  const isFieldNamed = fieldName.trim().length >= 3;
+  const isReady =
+    question.trim().length >= 12 && (!needsFieldName || isFieldNamed);
 
   if (state.status === "idle") {
     return (
@@ -104,6 +108,32 @@ function NewProjectFlow() {
               </button>
             ))}
           </div>
+
+          {needsFieldName ? (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+              className="mt-7"
+            >
+              <label htmlFor="field-name" className={`${microLabel} mb-3 block`}>
+                Which field is this
+              </label>
+              <input
+                id="field-name"
+                type="text"
+                value={fieldName}
+                onChange={(event) => setFieldName(event.target.value)}
+                placeholder="materials science"
+                className="w-full max-w-sm border-b border-white/20 bg-transparent pb-2 font-display text-lg font-light outline-none transition-colors placeholder:text-muted-foreground/40 focus:border-white/50"
+              />
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                The same words mean different things in different fields. Naming
+                yours keeps the search from returning papers that only look
+                related.
+              </p>
+            </motion.div>
+          ) : null}
         </section>
 
         <section className="mb-12 border-t border-white/10 pt-8">
@@ -141,6 +171,7 @@ function NewProjectFlow() {
               void send("/api/projects", {
                 question: question.trim(),
                 domain,
+                fieldName: needsFieldName ? fieldName.trim() : null,
                 paperTarget,
               });
             }}
@@ -150,7 +181,9 @@ function NewProjectFlow() {
           </motion.button>
 
           <p className={`${microLabel} mt-4`}>
-            About two minutes · roughly $0.15
+            {needsFieldName && !isFieldNamed
+              ? "Name the field first, so the search knows where to look"
+              : "About two minutes · roughly $0.15"}
           </p>
         </section>
       </div>
