@@ -4,33 +4,30 @@ import { summariseUsage } from "@/lib/tools/database/list-reports";
 export const runtime = "nodejs";
 
 export async function GET(): Promise<Response> {
-  let hasModel = false;
-  let hasDocumentReader = false;
+  let modelName = "not configured";
 
   try {
-    const environment = getServerEnvironment();
-    hasModel = environment.AZURE_OPENAI_API_KEY.length > 0;
-    hasDocumentReader = environment.AZURE_DOCUMENT_KEY.length > 0;
+    modelName = getServerEnvironment().AZURE_OPENAI_DEPLOYMENT;
   } catch {
     return Response.json({
-      model: false,
-      documentReader: false,
-      database: false,
-      note: "Azure settings are missing, so no check can run.",
+      modelName,
+      totalDollars: null,
+      runCount: null,
+      isStoring: false,
     });
   }
 
-  const databaseOutcome = await summariseUsage.run(
+  const usageOutcome = await summariseUsage.run(
     {},
     { runIdentifier: null, nodeName: "health", agentName: null }
   );
 
   return Response.json({
-    model: hasModel,
-    documentReader: hasDocumentReader,
-    database: databaseOutcome.successful,
-    note: databaseOutcome.successful
-      ? null
-      : "Reports will not be stored and papers cannot be watched.",
+    modelName,
+    totalDollars: usageOutcome.successful
+      ? usageOutcome.value.totalDollars
+      : null,
+    runCount: usageOutcome.successful ? usageOutcome.value.runCount : null,
+    isStoring: usageOutcome.successful,
   });
 }
