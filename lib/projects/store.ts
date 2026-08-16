@@ -27,6 +27,7 @@ export interface ProjectRecord {
   projectId: string;
   question: string;
   domain: string;
+  fieldName: string | null;
   paperTarget: number;
   stage: string;
   status: string;
@@ -82,6 +83,7 @@ export interface ProjectDraftRecord {
 export async function createProject(input: {
   question: string;
   domain: ResearchDomain;
+  fieldName: string | null;
   paperTarget: number;
 }): Promise<string> {
   const database = getDatabase();
@@ -91,6 +93,7 @@ export async function createProject(input: {
     .values({
       question: input.question,
       domain: input.domain,
+      fieldName: input.fieldName,
       paperTarget: input.paperTarget,
       stage: "finding-papers",
       status: "running",
@@ -478,6 +481,7 @@ function toProjectRecord(row: typeof projects.$inferSelect): ProjectRecord {
     projectId: row.id,
     question: row.question,
     domain: row.domain,
+    fieldName: row.fieldName,
     paperTarget: row.paperTarget,
     stage: row.stage,
     status: row.status,
