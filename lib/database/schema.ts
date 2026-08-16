@@ -160,6 +160,7 @@ export const projects = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     question: text("question").notNull(),
     domain: text("domain").notNull().default("other"),
+    fieldName: text("field_name"),
     paperTarget: integer("paper_target").notNull().default(10),
     stage: text("stage").notNull().default("finding-papers"),
     status: text("status").notNull().default("running"),
