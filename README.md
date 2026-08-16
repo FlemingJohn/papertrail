@@ -4,7 +4,7 @@
 
 **Checks whether a research paper's citations, numbers and methods hold up — then takes your own question from a literature search to a draft you can defend.**
 
-Upload a PDF. Thirty-one specialists read it, follow every citation back to its source, read the reported numbers twice over independently, list what is missing from the method, compare the findings against related work, and produce a report where every conclusion traces back to a page and a quotation.
+Upload a PDF. Thirty-two specialists read it, follow every citation back to its source, read the reported numbers twice over independently, list what is missing from the method, compare the findings against related work, and produce a report where every conclusion traces back to a page and a quotation.
 
 Then it keeps watching, because evidence moves.
 
@@ -117,8 +117,8 @@ That last one matters more than it looks. Roughly half of cited sources sit behi
 
 | | Count |
 | --- | --- |
-| **AI agents** | **31**, one file each |
-| **Tools** | **18** — 7 external and document, 11 database |
+| **AI agents** | **32**, one file each |
+| **Tools** | **24** — 7 external and document, 17 database |
 | Agent-callable tools | 6 (the rest are node-invoked only) |
 | **MCP servers** | **1**, exposing the 6 agent-callable tools over stdio |
 | Open data sources | 3 — OpenAlex, Crossref, Europe PMC |
@@ -126,7 +126,7 @@ That last one matters more than it looks. Roughly half of cited sources sit behi
 | Pipeline stages | 9 for a check, four of them concurrent |
 | Human gates | 3, on the question-to-draft path |
 
-Twenty-two of the 31 agents have **no tools at all**. They transform evidence handed to them. Giving a judge the ability to fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
+Twenty-six of the 32 agents have **no tools at all**. They transform evidence handed to them. Giving a judge the ability to fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
 
 ### Measured cost
 
