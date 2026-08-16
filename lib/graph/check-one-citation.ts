@@ -15,7 +15,7 @@ export interface CitationCheckInput {
   marker: string;
   rawReference: string;
   shouldTraceSources: boolean;
-  writer: RunEventWriter;
+  writer: RunEventWriter | null;
 }
 
 export interface CitationCheckOutput {
