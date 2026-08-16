@@ -1,82 +1,69 @@
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
+import { z } from "zod";
+import type { ParsedDocument } from "@/lib/schemas/document";
 import { runDepthSchema, runDepthSettings } from "@/lib/schemas/run";
 import { executeRun } from "@/lib/runs/execute-run";
 import { persistRun } from "@/lib/runs/persist-run";
-import { findStoredExtraction } from "@/lib/tools/database/upsert-document";
 import { encodeFrame } from "@/lib/runs/stream-protocol";
+import { readDocumentRecord } from "@/lib/tools/database/list-documents";
 
 export const runtime = "nodejs";
 
 export const maxDuration = 300;
 
-const maximumFileBytes = 20 * 1024 * 1024;
+const startRequestSchema = z.object({
+  documentId: z.uuid(),
+  depth: runDepthSchema.default("standard"),
+});
+
+const toolContext = {
+  runIdentifier: null,
+  nodeName: "runs-api",
+  agentName: null,
+};
 
 export async function POST(request: Request): Promise<Response> {
-  let formData: FormData;
+  let body: unknown;
 
   try {
-    formData = await request.formData();
+    body = await request.json();
   } catch {
-    return respondWithError(
+    return respond(400, "The request body was not valid JSON.");
+  }
+
+  const parsed = startRequestSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return respond(
       400,
-      "The upload could not be read. Send the PDF as multipart form data."
+      "Send a documentId and a depth. Add the paper to your knowledge base first."
     );
   }
 
-  const file = formData.get("file");
-
-  if (!(file instanceof File)) {
-    return respondWithError(400, "No PDF was attached to the request.");
-  }
-
-  if (file.type !== "application/pdf") {
-    return respondWithError(
-      415,
-      "Only PDF files can be analysed. Convert the document to PDF and try again."
-    );
-  }
-
-  if (file.size > maximumFileBytes) {
-    return respondWithError(
-      413,
-      "That PDF is larger than 20 MB. Try a version without embedded high resolution images."
-    );
-  }
-
-  const depthResult = runDepthSchema.safeParse(
-    formData.get("depth") ?? "standard"
+  const documentOutcome = await readDocumentRecord.run(
+    { documentId: parsed.data.documentId },
+    toolContext
   );
 
-  if (!depthResult.success) {
-    return respondWithError(
-      400,
-      "Depth must be one of quick, standard or deep."
+  if (!documentOutcome.successful) {
+    return respond(
+      404,
+      `That paper is not in your knowledge base: ${documentOutcome.failure.message}`
     );
   }
 
-  const settings = runDepthSettings[depthResult.data];
+  const paper = documentOutcome.value;
 
-  let base64Source: string;
-  let contentFingerprint: string;
-
-  try {
-    const bytes = Buffer.from(await file.arrayBuffer());
-    base64Source = bytes.toString("base64");
-    contentFingerprint = createHash("sha256").update(bytes).digest("hex");
-  } catch {
-    return respondWithError(400, "The PDF could not be decoded.");
+  if (paper.extractedContent === null) {
+    return respond(
+      409,
+      "That paper has no stored reading, so it cannot be checked. Add it again."
+    );
   }
 
+  const settings = runDepthSettings[parsed.data.depth];
   const runIdentifier = randomUUID();
-
-  const cachedOutcome = await findStoredExtraction.run(
-    { contentFingerprint },
-    { runIdentifier: null, nodeName: "runs-api", agentName: null }
-  );
-
-  const cachedDocument = cachedOutcome.successful
-    ? cachedOutcome.value.extractedContent
-    : null;
+  const extraction: ParsedDocument = paper.extractedContent;
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -85,13 +72,13 @@ export async function POST(request: Request): Promise<Response> {
       try {
         const iterator = executeRun({
           runIdentifier,
-          documentIdentifier: randomUUID(),
-          paperTitle: file.name.replace(/\.pdf$/i, ""),
-          base64Source,
-          cachedDocument,
-          depth: depthResult.data,
+          documentIdentifier: paper.documentId,
+          paperTitle: paper.title,
+          base64Source: "",
+          cachedDocument: extraction,
+          depth: parsed.data.depth,
           comparisonPaperLimit: settings.comparisonPaperLimit,
-          shouldTraceSources: depthResult.data !== "quick",
+          shouldTraceSources: parsed.data.depth !== "quick",
           shouldRunReview: settings.runReview,
         });
 
@@ -108,10 +95,9 @@ export async function POST(request: Request): Promise<Response> {
 
           const stored = await persistRun({
             graphRunIdentifier: runIdentifier,
-            contentFingerprint,
-            depth: depthResult.data,
+            documentId: paper.documentId,
+            depth: parsed.data.depth,
             report: frame.report,
-            extracted: frame.extracted ?? null,
           });
 
           controller.enqueue(
@@ -121,7 +107,7 @@ export async function POST(request: Request): Promise<Response> {
                   ? {
                       event: {
                         type: "run-stored",
-                        documentId: stored.value.documentId,
+                        documentId: paper.documentId,
                         reportId: stored.value.reportId,
                         isFirstReport: stored.value.isFirstReport,
                       },
@@ -132,7 +118,7 @@ export async function POST(request: Request): Promise<Response> {
                         type: "activity",
                         level: "warning",
                         message: "The report was not saved",
-                        detail: `${stored.failure.message} The findings above are complete, but this paper cannot be watched for changes until storage works.`,
+                        detail: `${stored.failure.message} The findings are complete, but this check cannot be compared against later ones.`,
                       },
                       report: null,
                     }
@@ -172,6 +158,6 @@ export async function POST(request: Request): Promise<Response> {
   });
 }
 
-function respondWithError(status: number, message: string): Response {
+function respond(status: number, message: string): Response {
   return Response.json({ error: message }, { status });
 }

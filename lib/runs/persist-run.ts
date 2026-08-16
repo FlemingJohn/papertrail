@@ -1,18 +1,15 @@
 import type { Report } from "../schemas/report";
 import type { RunDepth } from "../schemas/run";
-import type { ParsedDocument } from "../schemas/document";
 import { fail, succeed, type Outcome } from "../types/failure";
-import { upsertDocument } from "../tools/database/upsert-document";
 import { finishRunRecord, startRunRecord } from "../tools/database/save-run";
 import { saveReport } from "../tools/database/save-report";
 import { flushToolCalls } from "../tools/tool-log";
 
 export interface PersistRunInput {
   graphRunIdentifier: string;
-  contentFingerprint: string;
+  documentId: string;
   depth: RunDepth;
   report: Report;
-  extracted: ParsedDocument | null;
 }
 
 export interface PersistRunResult {
@@ -31,23 +28,8 @@ export async function persistRun(
     agentName: null,
   };
 
-  const documentOutcome = await upsertDocument.run(
-    {
-      title: input.report.paperTitle,
-      contentFingerprint: input.contentFingerprint,
-      pageCount: input.report.pageCount,
-      digitalObjectIdentifier: input.report.paperIdentifier,
-      extractedContent: input.extracted,
-    },
-    context
-  );
-
-  if (!documentOutcome.successful) {
-    return fail("database-error", documentOutcome.failure.message);
-  }
-
   const runOutcome = await startRunRecord.run(
-    { documentId: documentOutcome.value.documentId, depth: input.depth },
+    { documentId: input.documentId, depth: input.depth },
     context
   );
 
@@ -58,7 +40,7 @@ export async function persistRun(
   const reportOutcome = await saveReport.run(
     {
       runId: runOutcome.value.runId,
-      documentId: documentOutcome.value.documentId,
+      documentId: input.documentId,
       report: input.report,
     },
     context
@@ -84,9 +66,9 @@ export async function persistRun(
   );
 
   return succeed({
-    documentId: documentOutcome.value.documentId,
+    documentId: input.documentId,
     runId: runOutcome.value.runId,
     reportId: reportOutcome.value.reportId,
-    isFirstReport: documentOutcome.value.wasCreated,
+    isFirstReport: false,
   });
 }
