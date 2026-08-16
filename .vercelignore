@@ -1,0 +1,10 @@
+videos/
+papers/
+docs/
+supabase/
+scripts/
+mcp/
+.agents/
+.claude/
+*.md
+!README.md
