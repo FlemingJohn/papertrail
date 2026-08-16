@@ -45,6 +45,20 @@ The rates used for the displayed figure are in `lib/config/pricing.ts`. Change t
 
 Lookup results are cached for a week, so re-running the same paper costs materially less. The cache hit count is reported alongside the cost.
 
+### Cost of taking a question to a draft
+
+Measured across four real runs against live Azure on 16 August 2026, on the question *whether retrieval augmentation improves multi step reasoning in long context language models*.
+
+| Step | Cost | What ran |
+| --- | --- | --- |
+| Gathering and mapping | **$0.0149** | 6 papers gathered, evidence mapped, 3 gaps found |
+| Proposals and prior art | **$0.0599** | 2 proposals, 79 works searched across 8 lookups |
+| Designing the plan | **$0.0059** | steps, measurements, falsifying result |
+| Writing the draft | **$0.0261** | 1 figure, 2 tables, 6 sources, 12 citations |
+| **Total** | **$0.1068** | question to exportable draft |
+
+This path costs less than checking a single paper because the gathered papers are read as abstracts from OpenAlex rather than through Document Intelligence. No page charge applies, and no full text is fetched. That is a real limit as much as a saving — see below.
+
 ## Reproducing a run
 
 Reports carry a `fingerprint`: a SHA-256 over the claim identifiers, citation verdicts, extracted values, conflicts and confidence levels. Two runs of the same paper that reach the same conclusions produce the same fingerprint even though the wording differs.
@@ -64,6 +78,14 @@ The fingerprint deliberately excludes the narrative text and the agents' reasoni
 **A small calibration set, not a validation.** Twelve cases is an indication, not proof. It covers four failure modes and says nothing about how the system behaves on citation styles, fields or languages outside them. Treat the verdicts as a prompt to look, not as a finding.
 
 **Figures.** Numbers that appear only inside a chart image are not extracted. Only text and tables are read.
+
+**Gathered papers are abstracts, not full text.** On the question-to-draft path, papers found by search enter the project as their OpenAlex abstract. Gaps and proposals are therefore reasoned from abstracts, and every table cell about those papers reads `Not checked`. To reason from checked full text, add the paper to your knowledge base and check it first; it then joins the project with its verdicts attached.
+
+**A gap in these papers is not a gap in the field.** The gap finder is told this explicitly and its output is worded accordingly, but the constraint is structural: ten papers cannot tell you what an entire literature has not done.
+
+**`Nothing found` is not novelty.** The prior art checker reports the number of works it searched and the phrases it used, and the draft carries both. A verdict of nothing found means those searches, on OpenAlex, on that day. It has never been a claim that the idea is new, and the interface does not present it as one.
+
+**No LaTeX toolchain on the server.** PDF export goes through the browser's print view of a styled HTML preview, which is why the preview and the `.tex` are rendered from the same agent output by two separate renderers. The `.tex` is not compiled or validated here — it is written to compile in Overleaf against the exported `verified.bib`.
 
 **English only.** The prompts and the reference parsing assume English.
 
