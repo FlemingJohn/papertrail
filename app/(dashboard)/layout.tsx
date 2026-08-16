@@ -1,17 +1,20 @@
 import type { ReactNode } from "react";
+import { readSignedInAccount } from "@/lib/auth/server-client";
 import { DashboardProvider } from "@/lib/client/dashboard-context";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const account = await readSignedInAccount();
+
   return (
     <DashboardProvider>
       <div className="min-h-screen bg-background">
-        <DashboardHeader />
+        <DashboardHeader accountEmail={account?.email ?? null} />
 
         <div className="flex">
           <Sidebar />
