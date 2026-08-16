@@ -8,7 +8,7 @@ Upload a PDF. Thirty-two specialists read it, follow every citation back to its 
 
 Then it keeps watching, because evidence moves.
 
-**[Watch the demo](#demo)** · **[Try it signed in](#try-it-yourself)** · **[Test papers](#test-papers)**
+**[Watch the demo](https://youtu.be/3Hfrktyd2w4)** · **[Try it signed in](#try-it-yourself)** · **[Test papers](#test-papers)**
 
 ---
 
@@ -18,7 +18,9 @@ Then it keeps watching, because evidence moves.
 
 An eight minute walkthrough: the problem, the thirty-two agents, both halves of the product running live, and the measured results.
 
-https://github.com/FlemingJohn/papertrail/raw/master/docs/papertrail-demo.mp4
+**[Watch on YouTube](https://youtu.be/3Hfrktyd2w4)** · [download the file](docs/papertrail-demo.mp4)
+
+[![Watch the demo](https://img.youtube.com/vi/3Hfrktyd2w4/maxresdefault.jpg)](https://youtu.be/3Hfrktyd2w4)
 
 Everything on screen is the real application reading the real database. The narration was written first so the cursor arrives as each sentence lands; nothing is sped up and no frame is staged.
 
