@@ -1,4 +1,4 @@
-import { startProjectSchema } from "@/lib/schemas/project";
+import { describeField, startProjectSchema } from "@/lib/schemas/project";
 import { createProject, listProjects } from "@/lib/projects/store";
 import { runDiscovery } from "@/lib/projects/run-discovery";
 import { streamProjectEvents } from "@/lib/projects/stream-response";
@@ -39,9 +39,14 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = startProjectSchema.safeParse(body);
 
   if (!parsed.success) {
+    const fieldProblem = parsed.error.issues.find(
+      (issue) => issue.path[0] === "fieldName"
+    );
+
     return Response.json(
       {
         error:
+          fieldProblem?.message ??
           "Write the research question in at least twelve characters and choose how many papers to gather.",
       },
       { status: 400 }
@@ -68,6 +73,7 @@ export async function POST(request: Request): Promise<Response> {
     runDiscovery({
       projectId,
       question: parsed.data.question,
+      field: describeField(parsed.data.domain, parsed.data.fieldName),
       paperTarget: parsed.data.paperTarget,
     }),
     projectId
