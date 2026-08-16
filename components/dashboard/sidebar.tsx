@@ -10,6 +10,7 @@ import { microLabel } from "@/lib/design/tokens";
 import {
   ChartIcon,
   DocumentIcon,
+  FlaskIcon,
   ScaleIcon,
   SearchIcon,
   SpinnerIcon,
@@ -38,6 +39,7 @@ const groups: NavigationGroup[] = [
     label: "Research",
     items: [
       { href: "/check", label: "Check a paper", icon: SearchIcon },
+      { href: "/projects", label: "Research a question", icon: FlaskIcon },
       { href: "/reports", label: "Reports", icon: ScaleIcon },
     ],
   },
