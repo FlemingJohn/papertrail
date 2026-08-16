@@ -81,8 +81,16 @@ If the database is not reachable, checking a paper still works end to end. The r
 
 Anyone can create an account from `/sign-up`. Whether they can use it immediately depends on one setting in Supabase, under Authentication, Providers, Email:
 
-- **Confirm email on** (the default): signing up sends a confirmation link, and the app says to check the inbox. This is the right setting for anything public.
-- **Confirm email off**: signing up drops you straight into the dashboard. Useful while developing, and for a demo where waiting on an inbox would be awkward.
+- **Confirm email off** (what this project uses): signing up returns a session straight away and the browser lands on the dashboard already signed in.
+- **Confirm email on**: signing up sends a confirmation link and the app says to check the inbox.
+
+**Turn confirmation on before this is public, and configure your own SMTP at the same time.** The two go together, because Supabase's built-in email sender is a shared development service: it is rate limited to a couple of messages an hour and it will not deliver to arbitrary addresses. With confirmation on and no SMTP configured, a person signs up, is told to check their email, and no email ever arrives. There is nothing in the app that can detect this — the sign-up itself succeeded.
+
+Set it either in the dashboard, or over the Management API:
+
+```bash
+curl -X PATCH "https://api.supabase.com/v1/projects/<project-ref>/config/auth"   -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN"   -H "Content-Type: application/json"   -d '{"mailer_autoconfirm": true}'
+```
 
 To create an account without going through the form, use the Admin API with the project's **secret** key:
 
