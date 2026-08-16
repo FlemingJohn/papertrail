@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" width="480" height="480" role="img" aria-label="PaperTrail">
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1c1c"/>
+      <stop offset="1" stop-color="#0c0c0c"/>
+    </linearGradient>
+    <linearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#5b93f9"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="480" height="480" rx="108" fill="url(#ground)"/>
+  <rect x="2" y="2" width="476" height="476" rx="106" fill="none" stroke="#ffffff" stroke-opacity="0.10" stroke-width="4"/>
+
+  <g transform="translate(145 112)">
+    <path
+      d="M30 0 H138 L190 52 V226 A30 30 0 0 1 160 256 H30 A30 30 0 0 1 0 226 V30 A30 30 0 0 1 30 0 Z"
+      fill="#f5f5f5" fill-opacity="0.07"
+      stroke="#f5f5f5" stroke-width="12" stroke-linejoin="round"
+    />
+
+    <path
+      d="M138 0 V52 H190"
+      fill="none" stroke="#f5f5f5" stroke-width="12"
+      stroke-linecap="round" stroke-linejoin="round"
+    />
+
+    <path d="M36 104 H150" stroke="#f5f5f5" stroke-opacity="0.42" stroke-width="12" stroke-linecap="round"/>
+    <path d="M36 142 H108" stroke="#f5f5f5" stroke-opacity="0.42" stroke-width="12" stroke-linecap="round"/>
+
+    <circle cx="146" cy="214" r="31" fill="none" stroke="#2563eb" stroke-opacity="0.30" stroke-width="7"/>
+    <path
+      d="M36 182 H74 C114 182 146 192 146 214"
+      fill="none" stroke="url(#trail)" stroke-width="14"
+      stroke-linecap="round" stroke-linejoin="round"
+    />
+    <circle cx="146" cy="214" r="17" fill="url(#trail)"/>
+  </g>
+</svg>
