@@ -43,7 +43,7 @@
 
 Four lanes run at once after claims are found. `find-conflicts` waits for both the comparison papers and the extracted numbers. `review-paper` waits for all three checking lanes, because a reviewer with only part of the evidence produces a review that has to be redone.
 
-## The twenty-four agents
+## The thirty-one agents
 
 | Stage | Agents |
 | --- | --- |
@@ -56,10 +56,16 @@ Four lanes run at once after claims are found. `find-conflicts` waits for both t
 | review-paper | review-statistics, review-originality, review-method, review-evidence, review-summary |
 | write-report | confidence-rater, report-writer |
 | watch | change-finder, change-rater |
+| map-evidence | evidence-mapper |
+| find-gaps | gap-finder |
+| propose | novelty-maker |
+| check-prior-art | prior-art-checker |
+| design-method | method-designer |
+| draft | table-writer, diagram-writer, paper-writer |
 
 Each lives in its own file under `lib/agents/definitions/`. An agent is a name, a stage, a prompt, an output schema, a tool list and a temperature. Nothing else.
 
-Sixteen of the twenty-four have no tools at all. They transform evidence they were handed. Giving a judge the ability to go and fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
+Twenty-two of the thirty-one have no tools at all. They transform evidence they were handed. Giving a judge the ability to go and fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
 
 ## How agents exchange state
 
@@ -68,6 +74,23 @@ Agents never pass prose to each other. Each writes a typed record into the graph
 `lib/graph/state.ts` defines merge reducers so that the three checking lanes can write concurrently without overwriting one another. That reducer is the reason the lanes can run in parallel at all.
 
 After `check-methods` finishes, the original PDF stops being the source of truth. `find-conflicts`, `review-paper` and `write-report` read the accumulated findings, not the paper. This keeps the token cost flat as stages accumulate.
+
+## The question-to-draft path
+
+This path does not run on the LangGraph graph. It is four separate stage runners under `lib/projects/`, each started by its own request and each ending at a point where a human has to decide something.
+
+```
+POST /api/projects                     run-discovery    -> awaiting-gap-decision
+POST /api/projects/{id}/gaps           run-proposals    -> awaiting-proposal-decision
+POST /api/projects/{id}/proposals      run-method       -> awaiting-method-decision
+POST /api/projects/{id}/method         run-draft        -> finished
+```
+
+A graph `interrupt()` would have held the decision inside a checkpointed run, which means a browser tab left open overnight, or a serverless function held past its timeout. Making each gate a request boundary instead means the state between gates lives in Postgres, where it survives the tab being closed, the deploy going out, and the researcher thinking about it for a week. Every stage runner streams the same NDJSON event shape as a check run, so the live reasoning panel is the same component on both paths.
+
+**The adversarial pair.** `novelty-maker` writes proposals and is forbidden from claiming any of them are new. `prior-art-checker` is told to assume the proposal already exists and go find it, and returns the count of works it actually searched. That count is a real number from the tool results, not the model's estimate, and it is carried through into the draft's limits section.
+
+**Structure comes from the model, markup comes from code.** `diagram-writer` returns boxes with identifiers and arrows between them; `layout-diagram.ts` assigns coordinates by depth, `render-tikz.ts` emits the TikZ and `render-svg.ts` emits the SVG. An arrow pointing at a box that does not exist is dropped before either renderer sees it. The same holds for citations: `build-bibliography.ts` assembles the allowed keys in code from sources whose citation check passed, and `escape-latex.ts` strips any key the writer used that is not in that set, replacing it with a visible marker.
 
 ## Where the evidence comes from
 
