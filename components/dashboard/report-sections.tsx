@@ -9,7 +9,7 @@ import {
   reviewOutcomeLabels,
 } from "@/lib/config/labels";
 import { microLabel, sectionLabel } from "@/lib/design/tokens";
-import { QuoteIcon } from "./icons";
+export { CitationsSection } from "./citations-section";
 import {
   ConfidenceBadge,
   NeutralPill,
@@ -81,97 +81,6 @@ export function SummarySection({ report }: { report: Report }) {
         </section>
       )}
     </div>
-  );
-}
-
-export function CitationsSection({ report }: { report: Report }) {
-  if (report.citationChecks.length === 0) {
-    return <EmptyNote text="No citations were checked." />;
-  }
-
-  return (
-    <ul>
-      {report.citationChecks.map((check, index) => {
-        const claim = report.claims.find(
-          (entry) => entry.identifier === check.claimIdentifier
-        );
-
-        return (
-          <li
-            key={`${check.claimIdentifier}-${check.marker}-${index}`}
-            className="border-b border-white/10 py-8 first:pt-0"
-          >
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className={microLabel}>
-                {check.claimIdentifier} {check.marker}
-              </span>
-              <VerdictBadge verdict={check.judgement.verdict} />
-              {claim === undefined ? null : (
-                <span className={microLabel}>
-                  page {claim.location.pageNumber}
-                </span>
-              )}
-            </div>
-
-            <p className="mb-4 max-w-3xl font-display text-xl font-light leading-snug">
-              {claim?.text ?? check.rawReference}
-            </p>
-
-            {check.resolvedSource === null ? null : (
-              <p className="mb-4 text-sm text-muted-foreground">
-                Cited: {check.resolvedSource.title}
-                {check.resolvedSource.publicationYear === null
-                  ? ""
-                  : ` (${check.resolvedSource.publicationYear})`}
-              </p>
-            )}
-
-            <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-              {check.judgement.reasoning}
-            </p>
-
-            {check.judgement.quotedEvidence === null ? null : (
-              <blockquote className="mt-4 flex max-w-3xl gap-3 border-l border-accent/60 pl-4">
-                <QuoteIcon className="size-4 shrink-0 translate-y-1 text-accent/70" />
-                <span className="text-sm italic leading-relaxed text-muted-foreground">
-                  {check.judgement.quotedEvidence}
-                </span>
-              </blockquote>
-            )}
-
-            {check.trace === null || check.trace.chain.length < 2 ? null : (
-              <div className="mt-6">
-                <p className={`${microLabel} mb-3`}>
-                  Where the finding came from
-                </p>
-                <ol className="space-y-2">
-                  {check.trace.chain.map((link, linkIndex) => (
-                    <li
-                      key={link.digitalObjectIdentifier}
-                      className="flex flex-wrap items-center gap-3"
-                      style={{ paddingLeft: `${linkIndex * 20}px` }}
-                    >
-                      <span
-                        className={`font-mono text-[10px] uppercase tracking-widest ${
-                          link.role === "original"
-                            ? "text-verdict-supported"
-                            : "text-verdict-indirect-source"
-                        }`}
-                      >
-                        {link.role === "original" ? "original" : "repeats"}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {link.title}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            )}
-          </li>
-        );
-      })}
-    </ul>
   );
 }
 
