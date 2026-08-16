@@ -7,7 +7,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useDashboard } from "@/lib/client/dashboard-context";
 import { formatDollars } from "@/lib/config/pricing";
 import { microLabel } from "@/lib/design/tokens";
-import { ScaleIcon, SpinnerIcon, UploadIcon } from "./icons";
+import {
+  ChartIcon,
+  DocumentIcon,
+  ScaleIcon,
+  SpinnerIcon,
+  UploadIcon,
+} from "./icons";
 
 const openWidth = "15rem";
 
@@ -43,11 +49,27 @@ export function Sidebar() {
         />
 
         <SidebarLink
+          href="/history"
+          isActive={pathname === "/history"}
+          isSidebarOpen={isSidebarOpen}
+          icon={<DocumentIcon className="size-[18px]" />}
+          label="History"
+        />
+
+        <SidebarLink
           href="/watchlist"
           isActive={pathname === "/watchlist"}
           isSidebarOpen={isSidebarOpen}
           icon={<ScaleIcon className="size-[18px]" />}
           label="Watchlist"
+        />
+
+        <SidebarLink
+          href="/usage"
+          isActive={pathname === "/usage"}
+          isSidebarOpen={isSidebarOpen}
+          icon={<ChartIcon className="size-[18px]" />}
+          label="Usage"
         />
       </nav>
 

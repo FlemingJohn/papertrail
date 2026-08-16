@@ -14,6 +14,7 @@ import { saveWatch, stopWatch } from "./database/save-watch";
 import { findDueWatches, listWatches } from "./database/list-watches";
 import { saveWatchCheck } from "./database/save-watch-check";
 import { findWatchHistory } from "./database/find-watch-history";
+import { listReports, readReport, summariseUsage } from "./database/list-reports";
 
 export const allTools: readonly RegisteredTool[] = [
   readDocument,
@@ -34,6 +35,9 @@ export const allTools: readonly RegisteredTool[] = [
   findDueWatches,
   saveWatchCheck,
   findWatchHistory,
+  listReports,
+  readReport,
+  summariseUsage,
 ] as readonly RegisteredTool[];
 
 const toolsByName = new Map<string, RegisteredTool>(
@@ -85,6 +89,9 @@ export const toolLabels: Record<string, string> = {
   database_find_due_watches: "Finding checks that are due",
   database_save_watch_check: "Storing the comparison",
   database_find_watch_history: "Reading the check history",
+  database_list_reports: "Listing past reports",
+  database_read_report: "Opening a stored report",
+  database_summarise_usage: "Totalling usage",
 };
 
 export function getToolLabel(name: string): string {
