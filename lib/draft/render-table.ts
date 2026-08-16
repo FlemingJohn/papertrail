@@ -1,6 +1,8 @@
 import type { TableSpec } from "../schemas/figures";
 import { escapeLatex } from "./escape-latex";
 
+const shortCellLength = 18;
+
 export function renderLatexTable(spec: TableSpec, label: string): string {
   const columnCount = spec.columns.length;
 
@@ -8,9 +10,20 @@ export function renderLatexTable(spec: TableSpec, label: string): string {
     return "";
   }
 
-  const alignment = spec.columns
-    .map((_, index) => (index === 0 ? "l" : "l"))
+  const longestByColumn = spec.columns.map((column, index) =>
+    spec.rows.reduce(
+      (longest, row) => Math.max(longest, (row[index] ?? "").length),
+      column.length
+    )
+  );
+
+  const alignment = longestByColumn
+    .map((longest) =>
+      longest <= shortCellLength ? "l" : ">{\\raggedright\\arraybackslash}X"
+    )
     .join("");
+
+  const hasWrappingColumn = alignment.includes("X");
 
   const headerRow = spec.columns
     .map((column) => `\\textbf{${escapeLatex(column)}}`)
@@ -31,17 +44,25 @@ export function renderLatexTable(spec: TableSpec, label: string): string {
     return `${cells.join(" & ")} \\\\`;
   });
 
+  const openTabular = hasWrappingColumn
+    ? `  \\begin{tabularx}{\\textwidth}{${alignment}}`
+    : `  \\begin{tabular}{${alignment}}`;
+
+  const closeTabular = hasWrappingColumn
+    ? "  \\end{tabularx}"
+    : "  \\end{tabular}";
+
   const lines = [
     "\\begin{table}[t]",
     "  \\centering",
     "  \\small",
-    `  \\begin{tabular}{${alignment}}`,
+    openTabular,
     "    \\toprule",
     `    ${headerRow} \\\\`,
     "    \\midrule",
     ...bodyRows.map((row) => `    ${row}`),
     "    \\bottomrule",
-    "  \\end{tabular}",
+    closeTabular,
     `  \\caption{${escapeLatex(spec.caption)}}`,
     `  \\label{tab:${label}}`,
   ];
