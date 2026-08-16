@@ -4,13 +4,22 @@ export const dollarsPerMillionOutputTokens = 10;
 
 export const dollarsPerDocumentPage = 0.01;
 
+export const cachedInputDiscount = 0.5;
+
 export function calculateModelDollars(
   tokensIn: number,
-  tokensOut: number
+  tokensOut: number,
+  cachedTokensIn = 0
 ): number {
-  const inputDollars = (tokensIn / 1_000_000) * dollarsPerMillionInputTokens;
+  const freshTokensIn = Math.max(0, tokensIn - cachedTokensIn);
+  const freshDollars =
+    (freshTokensIn / 1_000_000) * dollarsPerMillionInputTokens;
+  const cachedDollars =
+    (cachedTokensIn / 1_000_000) *
+    dollarsPerMillionInputTokens *
+    cachedInputDiscount;
   const outputDollars = (tokensOut / 1_000_000) * dollarsPerMillionOutputTokens;
-  return roundToSixPlaces(inputDollars + outputDollars);
+  return roundToSixPlaces(freshDollars + cachedDollars + outputDollars);
 }
 
 export function calculateDocumentDollars(pageCount: number): number {
