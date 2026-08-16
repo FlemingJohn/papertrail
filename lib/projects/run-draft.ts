@@ -7,6 +7,7 @@ import { buildBibliography } from "../draft/build-bibliography";
 import { buildLatexDocument } from "../draft/build-latex";
 import { renderPreviewHtml } from "../draft/render-preview";
 import { collectSources } from "./collect-sources";
+import { flushProjectToolCalls } from "../tools/tool-log";
 import { EventStream, streamWhileRunning } from "./event-stream";
 import { SpendTracker } from "./spend-tracker";
 import {
@@ -269,6 +270,7 @@ export function runDraft(input: DraftInput): AsyncGenerator<RunEvent> {
     });
 
     await addProjectSpend(input.projectId, tracker.dollars());
+    await flushProjectToolCalls(input.projectId);
     await setProjectStage(input.projectId, "finished", "finished");
 
     stream.emit({
