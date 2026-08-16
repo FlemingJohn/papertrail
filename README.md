@@ -263,3 +263,4 @@ Expect more `Source not found` verdicts on the arXiv papers. That is the referen
 - [Architecture](docs/architecture.md) — how the 32 agents fit together, and what happens when things fail
 - [Setup](docs/setup.md) — Azure deployments, Supabase, first run
 - [Reproducibility](docs/reproducibility.md) — models, data sources, measured costs, known limits
+- [Deploying](docs/deploying.md) — Vercel, environment values, and the function timeout that matters
