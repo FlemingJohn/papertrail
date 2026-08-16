@@ -8,6 +8,7 @@ import { Logo } from "@/components/logo"
 const sections = [
   { label: "How it works", target: "#how-it-works" },
   { label: "What it checks", target: "#what-it-checks" },
+  { label: "From a question", target: "#from-a-question" },
 ]
 
 export function Navbar() {
