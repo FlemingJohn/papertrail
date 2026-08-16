@@ -364,6 +364,10 @@ export function CostSection({ report }: { report: Report }) {
     { label: "Total", value: formatDollars(report.spend.totalDollars) },
     { label: "Tokens in", value: report.spend.tokensIn.toLocaleString() },
     { label: "Tokens out", value: report.spend.tokensOut.toLocaleString() },
+    {
+      label: "Reused from cache",
+      value: report.spend.cachedTokensIn.toLocaleString(),
+    },
     { label: "Pages read", value: String(report.spend.documentPagesRead) },
     { label: "Lookups", value: String(report.spend.toolCallCount) },
     { label: "Served from cache", value: String(report.spend.cacheHitCount) },
@@ -406,6 +410,15 @@ export function CostSection({ report }: { report: Report }) {
             were served from cache, so re-checking this paper costs materially
             less.
           </li>
+          {report.spend.cachedTokensIn === 0 ? null : (
+            <li>
+              <span className="text-foreground">
+                {promptCacheRate(report)}%
+              </span>{" "}
+              of what was sent to the model was already cached from an earlier
+              call, and is charged at half rate.
+            </li>
+          )}
           <li>
             {report.coverage.citationsChecked} citations checked,{" "}
             {report.coverage.citationsUncheckable} of them unverifiable because
@@ -415,6 +428,13 @@ export function CostSection({ report }: { report: Report }) {
       </div>
     </div>
   );
+}
+
+function promptCacheRate(report: Report): number {
+  if (report.spend.tokensIn === 0) {
+    return 0;
+  }
+  return Math.round((report.spend.cachedTokensIn / report.spend.tokensIn) * 100);
 }
 
 function EmptyNote({ text }: { text: string }) {
