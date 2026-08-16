@@ -61,6 +61,12 @@ export const runStageLabels: Record<RunStage, string> = {
   "finding-conflicts": "Finding conflicts",
   reviewing: "Reviewing",
   "writing-report": "Writing the report",
+  "mapping-evidence": "Mapping what is settled",
+  "finding-gaps": "Finding what is missing",
+  proposing: "Making proposals",
+  "checking-prior-art": "Checking whether it already exists",
+  "designing-method": "Designing the test",
+  drafting: "Writing the draft",
 };
 
 export const orderedRunStages: readonly RunStage[] = [
