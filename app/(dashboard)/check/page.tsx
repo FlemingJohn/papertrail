@@ -1,55 +1,26 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import type { Report } from "@/lib/schemas/report";
-import {
-  useDashboard,
-  type DashboardView,
-} from "@/lib/client/dashboard-context";
+import { useDashboard } from "@/lib/client/dashboard-context";
 import { formatDollars } from "@/lib/config/pricing";
-import { isProblemVerdict } from "@/lib/schemas/verdict";
-import { displayMedium, microLabel, sectionLabel } from "@/lib/design/tokens";
+import {
+  buttonPrimary,
+  displayMedium,
+  microLabel,
+  sectionLabel,
+} from "@/lib/design/tokens";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { ErrorBoundary } from "@/components/dashboard/error-boundary";
-import {
-  ChartIcon,
-  CoinIcon,
-  LinkIcon,
-  ProblemIcon,
-  ScaleIcon,
-} from "@/components/dashboard/icons";
+import { CheckIcon, ProblemIcon } from "@/components/dashboard/icons";
 import { LiveReasoning } from "@/components/dashboard/live-reasoning";
 import { PipelineProgress } from "@/components/dashboard/pipeline-progress";
-import { StatTile } from "@/components/dashboard/stat-tile";
 import { UploadPanel } from "@/components/dashboard/upload-panel";
 import { WatchButton } from "@/components/dashboard/watch-button";
-import {
-  CitationsSection,
-  ConflictsSection,
-  CostSection,
-  MethodsSection,
-  NumbersSection,
-  ReviewSection,
-  SummarySection,
-} from "@/components/dashboard/report-sections";
-
-type ReportTab = Exclude<DashboardView, "check">;
-
-const reportTabs: Array<{ key: ReportTab; label: string }> = [
-  { key: "summary", label: "Summary" },
-  { key: "citations", label: "Citations" },
-  { key: "numbers", label: "Numbers" },
-  { key: "methods", label: "Methods" },
-  { key: "conflicts", label: "Conflicts" },
-  { key: "review", label: "Review" },
-  { key: "cost", label: "Cost" },
-];
 
 export default function CheckPage() {
-  const { run, startRun, cancelRun, activeView, setActiveView } =
-    useDashboard();
+  const { run, startRun, cancelRun } = useDashboard();
   const isRunning = run.status === "running";
-  const report = run.report;
 
   return (
     <ErrorBoundary>
@@ -125,6 +96,30 @@ export default function CheckPage() {
           </div>
 
           <div className="min-h-[30rem] space-y-14">
+            {run.reportId === null ? null : (
+              <motion.section
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="border-t border-verdict-supported/40 pt-8"
+              >
+                <div className="mb-4 flex items-center gap-3">
+                  <CheckIcon className="size-5 text-verdict-supported" />
+                  <p className={sectionLabel}>The report is ready</p>
+                </div>
+
+                <p className="mb-6 max-w-xl text-sm leading-relaxed text-muted-foreground">
+                  It is stored, so it keeps its own address. You can come back
+                  to it, or send the link to someone else, without running the
+                  check again.
+                </p>
+
+                <Link href={`/reports/${run.reportId}`} className={buttonPrimary}>
+                  Open the report
+                </Link>
+              </motion.section>
+            )}
+
             {run.errorMessage === null ? null : (
               <div
                 role="alert"
@@ -152,144 +147,8 @@ export default function CheckPage() {
           </div>
         </div>
 
-        {report === null ? null : (
-          <ReportPane
-            report={report}
-            activeTab={activeView === "check" ? "summary" : activeView}
-            onSelectTab={setActiveView}
-          />
-        )}
       </div>
     </ErrorBoundary>
-  );
-}
-
-interface ReportPaneProps {
-  report: Report;
-  activeTab: ReportTab;
-  onSelectTab: (tab: ReportTab) => void;
-}
-
-function ReportPane({ report, activeTab, onSelectTab }: ReportPaneProps) {
-  const problemCount = report.citationChecks.filter((check) =>
-    isProblemVerdict(check.judgement.verdict)
-  ).length;
-
-  const soundPercentage =
-    report.citationChecks.length === 0
-      ? 100
-      : Math.round(
-          ((report.citationChecks.length - problemCount) /
-            report.citationChecks.length) *
-            100
-        );
-
-  const averageAgreement =
-    report.measurements.length === 0
-      ? 1
-      : report.measurements.reduce(
-          (total, measurement) => total + measurement.agreementScore,
-          0
-        ) / report.measurements.length;
-
-  const counts: Partial<Record<ReportTab, number>> = {
-    citations: report.citationChecks.length,
-    numbers: report.measurements.length,
-    methods: report.missingDetails.length,
-    conflicts: report.conflicts.length,
-    review: report.review?.points.length ?? 0,
-  };
-
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="mt-20 border-t border-white/10 pt-12"
-    >
-      <p className={`${sectionLabel} mb-8`}>05 — The report</p>
-
-      <div className="mb-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile
-          label="Citations sound"
-          value={`${soundPercentage}%`}
-          detail={`${problemCount} of ${report.citationChecks.length} had problems`}
-          tone={problemCount === 0 ? "good" : "warning"}
-          icon={<LinkIcon className="size-4" />}
-        />
-        <StatTile
-          label="Reader agreement"
-          value={averageAgreement.toFixed(2)}
-          detail={`across ${report.measurements.length} numbers`}
-          tone={averageAgreement >= 0.8 ? "good" : "warning"}
-          icon={<ChartIcon className="size-4" />}
-        />
-        <StatTile
-          label="Disagreements"
-          value={String(report.conflicts.length)}
-          detail={`${report.coverage.comparisonPapersUsed} papers compared`}
-          tone={report.conflicts.length === 0 ? "good" : "warning"}
-          icon={<ScaleIcon className="size-4" />}
-        />
-        <StatTile
-          label="Cost"
-          value={formatDollars(report.spend.totalDollars)}
-          detail={`${report.spend.toolCallCount} lookups, ${report.spend.cacheHitCount} cached`}
-          icon={<CoinIcon className="size-4" />}
-        />
-      </div>
-
-      <nav className="mb-10 flex flex-wrap gap-2">
-        {reportTabs.map((tab) => {
-          const count = counts[tab.key];
-          const isFlagged = tab.key === "citations" && problemCount > 0;
-
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => onSelectTab(tab.key)}
-              aria-current={activeTab === tab.key ? "page" : undefined}
-              className={`rounded-full border px-5 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors duration-300 ${
-                activeTab === tab.key
-                  ? "border-white/60 text-foreground"
-                  : "border-white/20 text-muted-foreground hover:border-white/40"
-              }`}
-            >
-              {tab.label}
-              {count === undefined || count === 0 ? null : (
-                <span
-                  className={`ml-2 ${
-                    isFlagged ? "text-verdict-wrong-source" : "opacity-50"
-                  }`}
-                >
-                  {isFlagged ? `${problemCount}!` : count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-      >
-        {activeTab === "summary" ? <SummarySection report={report} /> : null}
-        {activeTab === "citations" ? (
-          <CitationsSection report={report} />
-        ) : null}
-        {activeTab === "numbers" ? <NumbersSection report={report} /> : null}
-        {activeTab === "methods" ? <MethodsSection report={report} /> : null}
-        {activeTab === "conflicts" ? (
-          <ConflictsSection report={report} />
-        ) : null}
-        {activeTab === "review" ? <ReviewSection report={report} /> : null}
-        {activeTab === "cost" ? <CostSection report={report} /> : null}
-      </motion.div>
-    </motion.section>
   );
 }
 
