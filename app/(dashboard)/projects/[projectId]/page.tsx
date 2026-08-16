@@ -26,6 +26,7 @@ import { GapGate } from "@/components/projects/gap-gate";
 import { MethodGate } from "@/components/projects/method-gate";
 import { ProjectProgress } from "@/components/projects/project-progress";
 import { ProposalGate } from "@/components/projects/proposal-gate";
+import { DecisionHistory } from "@/components/projects/decision-history";
 
 export default function ProjectPage() {
   return (
@@ -269,6 +270,10 @@ function ProjectWorkspace() {
             </div>
           ) : null}
         </section>
+      )}
+
+      {isBusy || project.stage.startsWith("awaiting-") ? null : (
+        <DecisionHistory gaps={gaps} proposals={proposals} />
       )}
 
       <section className="border-t border-white/10 pt-10">
