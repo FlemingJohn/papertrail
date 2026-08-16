@@ -43,7 +43,7 @@
 
 Four lanes run at once after claims are found. `find-conflicts` waits for both the comparison papers and the extracted numbers. `review-paper` waits for all three checking lanes, because a reviewer with only part of the evidence produces a review that has to be redone.
 
-## The thirty-one agents
+## The thirty-two agents
 
 | Stage | Agents |
 | --- | --- |
@@ -65,7 +65,7 @@ Four lanes run at once after claims are found. `find-conflicts` waits for both t
 
 Each lives in its own file under `lib/agents/definitions/`. An agent is a name, a stage, a prompt, an output schema, a tool list and a temperature. Nothing else.
 
-Twenty-two of the thirty-one have no tools at all. They transform evidence they were handed. Giving a judge the ability to go and fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
+Twenty-six of the thirty-two have no tools at all. They transform evidence they were handed. Giving a judge the ability to go and fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
 
 ## How agents exchange state
 
