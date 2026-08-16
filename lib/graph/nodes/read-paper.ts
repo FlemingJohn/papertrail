@@ -36,6 +36,20 @@ export async function readPaper(
   const writer = buildEventWriter(config);
   announceStage(writer, "reading-paper");
 
+  if (state.document !== null) {
+    reportActivity(
+      writer,
+      "success",
+      `Reusing the stored reading of ${state.document.pageCount} pages`,
+      "This paper has been read before, so it was not sent to the document reader again."
+    );
+
+    return {
+      paperTitle: readTitle(state.document.textBlocks) ?? state.paperTitle,
+      documentPagesRead: 0,
+    };
+  }
+
   const outcome = await readDocument.run(
     { base64Source: state.base64Source },
     {

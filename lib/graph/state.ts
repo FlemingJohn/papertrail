@@ -100,6 +100,7 @@ export function buildInitialState(input: {
   documentIdentifier: string;
   paperTitle: string;
   base64Source: string;
+  cachedDocument: ParsedDocument | null;
   depth: RunDepth;
   comparisonPaperLimit: number;
   shouldTraceSources: boolean;
@@ -114,7 +115,7 @@ export function buildInitialState(input: {
     shouldRunReview: input.shouldRunReview,
     paperTitle: input.paperTitle,
     base64Source: input.base64Source,
-    document: null,
+    document: input.cachedDocument,
     claims: [],
     comparisonPapers: [],
     citationChecks: [],

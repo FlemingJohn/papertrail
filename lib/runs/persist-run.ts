@@ -1,5 +1,6 @@
 import type { Report } from "../schemas/report";
 import type { RunDepth } from "../schemas/run";
+import type { ParsedDocument } from "../schemas/document";
 import { fail, succeed, type Outcome } from "../types/failure";
 import { upsertDocument } from "../tools/database/upsert-document";
 import { finishRunRecord, startRunRecord } from "../tools/database/save-run";
@@ -11,6 +12,7 @@ export interface PersistRunInput {
   contentFingerprint: string;
   depth: RunDepth;
   report: Report;
+  extracted: ParsedDocument | null;
 }
 
 export interface PersistRunResult {
@@ -35,6 +37,7 @@ export async function persistRun(
       contentFingerprint: input.contentFingerprint,
       pageCount: input.report.pageCount,
       digitalObjectIdentifier: input.report.paperIdentifier,
+      extractedContent: input.extracted,
     },
     context
   );

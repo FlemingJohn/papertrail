@@ -1,6 +1,7 @@
 import type { Report } from "../schemas/report";
 import type { RunDepth } from "../schemas/run";
 import type { RunEvent } from "../types/stream";
+import type { ParsedDocument } from "../schemas/document";
 import { buildGraph } from "../graph";
 import { buildInitialState, type RunState } from "../graph/state";
 import { buildReport } from "../graph/build-report";
@@ -11,6 +12,7 @@ export interface ExecuteRunInput {
   documentIdentifier: string;
   paperTitle: string;
   base64Source: string;
+  cachedDocument: ParsedDocument | null;
   depth: RunDepth;
   comparisonPaperLimit: number;
   shouldTraceSources: boolean;
@@ -20,6 +22,7 @@ export interface ExecuteRunInput {
 export interface RunOutcomeMessage {
   event: RunEvent;
   report: Report | null;
+  extracted?: ParsedDocument | null;
 }
 
 export async function* executeRun(
@@ -107,5 +110,6 @@ export async function* executeRun(
       durationMilliseconds: Date.now() - startedAt,
     },
     report,
+    extracted: latestState.document,
   };
 }
