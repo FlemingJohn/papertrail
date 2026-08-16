@@ -67,6 +67,21 @@ The fingerprint deliberately excludes the narrative text and the agents' reasoni
 
 ## Known limits
 
+**One workspace, shared by every account.** Signing in controls who may use the
+application, not what they may see. No table records an owner, and every query is
+unscoped, so any signed-in account reads and writes the same papers, reports and
+projects as every other one. Row level security is switched off and would not help
+if it were on: the application talks to Postgres directly over `DATABASE_URL`
+through Drizzle, which bypasses it entirely.
+
+This was a deliberate choice for a hackathon submission, where the point is that a
+reviewer signs in and immediately finds a finished report and a finished project
+instead of an empty screen. It is not defensible beyond that. Making it
+multi-tenant means adding an owner column to `documents` and `projects`, filtering
+every read and write by the signed-in account, and backfilling what already exists.
+Until that is done, treat anything uploaded here as visible to everyone with an
+account.
+
 **Scanned PDFs.** Document Intelligence reads them, but a reference list rendered as an image cannot be matched to citation markers in the body, so citation checking degrades to nothing. The report says so.
 
 **Paywalled sources.** Roughly half of cited sources in most fields are not open access. Those are checked against the abstract where one exists, and marked `Could not check` where none does. This is the single largest limit on coverage, and it is a property of academic publishing rather than of this tool.
