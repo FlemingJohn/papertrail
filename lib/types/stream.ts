@@ -80,7 +80,31 @@ export interface RunFailedEvent {
   isRecoverable: boolean;
 }
 
+export interface ProjectStartedEvent {
+  type: "project-started";
+  projectId: string;
+  question: string;
+}
+
+export interface ProjectGateEvent {
+  type: "project-gate";
+  projectId: string;
+  stage: string;
+  heading: string;
+  message: string;
+}
+
+export interface ProjectFinishedEvent {
+  type: "project-finished";
+  projectId: string;
+  stage: string;
+  draftId: string | null;
+}
+
 export type RunEvent =
+  | ProjectStartedEvent
+  | ProjectGateEvent
+  | ProjectFinishedEvent
   | StageChangedEvent
   | AgentStartedEvent
   | AgentThinkingEvent
