@@ -27,9 +27,16 @@ export interface OpenAlexListResponse {
 
 function buildHeaders(): Record<string, string> {
   const environment = getServerEnvironment();
-  return {
+
+  const headers: Record<string, string> = {
     "User-Agent": `PaperTrail (mailto:${environment.OPENALEX_CONTACT_EMAIL})`,
   };
+
+  if (environment.OPENALEX_API_KEY !== undefined) {
+    headers.Authorization = `Bearer ${environment.OPENALEX_API_KEY}`;
+  }
+
+  return headers;
 }
 
 export async function fetchWorkByDoi(
