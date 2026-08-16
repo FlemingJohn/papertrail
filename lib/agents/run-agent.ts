@@ -13,6 +13,7 @@ import { toStrictJsonSchema } from "./json-schema";
 import { ThinkingExtractor } from "./thinking-extractor";
 import { buildLangChainTools } from "./tool-binding";
 import { getToolLabel } from "../tools/registry";
+import { recordUsage } from "./usage-log";
 
 const maximumToolRounds = 6;
 
@@ -86,6 +87,7 @@ export async function runAgent<OutputSchema extends z.ZodType>(
         output: attemptOutcome.value.result as z.infer<OutputSchema>,
         tokensIn,
         tokensOut,
+        cachedTokensIn: attemptOutcome.value.cachedTokensIn,
         durationMilliseconds: Date.now() - startedAt,
       });
     }
@@ -220,9 +222,19 @@ async function requestStructuredAnswer<OutputSchema extends z.ZodType>(
   options: AgentRunOptions,
   messages: BaseMessage[],
   wrappedSchema: z.ZodType
-): Promise<Outcome<{ thinking: string; result: unknown; tokensOut: number }>> {
+): Promise<
+  Outcome<{
+    thinking: string;
+    result: unknown;
+    tokensOut: number;
+    cachedTokensIn: number;
+  }>
+> {
   const extractor = new ThinkingExtractor();
   let rawAnswer = "";
+  let measuredIn = 0;
+  let measuredOut = 0;
+  let measuredCached = 0;
 
   try {
     const stream = await getModel(definition.temperature).stream(messages, {
@@ -237,6 +249,14 @@ async function requestStructuredAnswer<OutputSchema extends z.ZodType>(
     });
 
     for await (const chunk of stream) {
+      const usage = chunk.usage_metadata;
+
+      if (usage !== undefined) {
+        measuredIn += usage.input_tokens ?? 0;
+        measuredOut += usage.output_tokens ?? 0;
+        measuredCached += usage.input_token_details?.cache_read ?? 0;
+      }
+
       const text = typeof chunk.content === "string" ? chunk.content : "";
 
       if (text.length === 0) {
@@ -288,9 +308,17 @@ async function requestStructuredAnswer<OutputSchema extends z.ZodType>(
 
   const value = validated.data as { thinking: string; result: unknown };
 
+  recordUsage(
+    options.runIdentifier,
+    measuredIn,
+    measuredOut,
+    measuredCached
+  );
+
   return succeed({
     thinking: value.thinking,
     result: value.result,
-    tokensOut: estimateTokenCount(rawAnswer),
+    tokensOut: measuredOut > 0 ? measuredOut : estimateTokenCount(rawAnswer),
+    cachedTokensIn: measuredCached,
   });
 }

@@ -27,6 +27,7 @@ export interface AgentResult<Output> {
   output: Output;
   tokensIn: number;
   tokensOut: number;
+  cachedTokensIn: number;
   durationMilliseconds: number;
 }
 

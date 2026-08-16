@@ -24,6 +24,7 @@ export function getModel(temperature: number): AzureChatOpenAI {
     maxRetries: 2,
     timeout: 120000,
     streaming: true,
+    streamUsage: true,
   });
 
   modelCache.set(temperature, model);
