@@ -8,6 +8,37 @@ Upload a PDF. Thirty-two specialists read it, follow every citation back to its 
 
 Then it keeps watching, because evidence moves.
 
+**[Watch the demo](#demo)** · **[Try it signed in](#try-it-yourself)** · **[Test papers](#test-papers)**
+
+---
+
+<a id="demo"></a>
+
+## Demo
+
+An eight minute walkthrough: the problem, the thirty-two agents, both halves of the product running live, and the measured results.
+
+https://github.com/FlemingJohn/papertrail/raw/master/docs/papertrail-demo.mp4
+
+Everything on screen is the real application reading the real database. The narration was written first so the cursor arrives as each sentence lands; nothing is sped up and no frame is staged.
+
+---
+
+<a id="try-it-yourself"></a>
+
+## Try it yourself
+
+A prepared account, already signed up and confirmed:
+
+| | |
+| --- | --- |
+| **Email** | `judge@papertrail.app` |
+| **Password** | `PaperTrail2026` |
+
+It is an ordinary account. The application has no role system, so this sees exactly what any signed-in user sees — there is no separate admin view.
+
+Signed in, there is a checked report waiting (23 citations, 13 with problems) and a finished research project with its openings, proposals, prior-art verdicts and an exported draft.
+
 ---
 
 ## The problem
@@ -199,8 +230,36 @@ Open `http://localhost:3000/check`. Checking a paper works without a database �
 npm run mcp                    # expose the lookup tools to any MCP client
 ```
 
+<a id="test-papers"></a>
+
+## Test papers
+
+Eight open access PDFs live in `../paper/`, deliberately outside this repository so nothing there is ever mistaken for source. All are freely redistributable.
+
+**Machine learning, from arXiv** — numeric markers, dense results tables, reference lists that often carry no DOI. Good for exercising the title-fallback path and for seeing `Source not found` reported honestly.
+
+| File | Paper |
+| --- | --- |
+| `attention-is-all-you-need.pdf` | Vaswani et al. 2017 — every measured cost figure in the docs comes from this one |
+| `adam-optimizer.pdf` | Kingma & Ba 2014 — heavy on stated hyperparameters, stresses the method checker |
+| `resnet-deep-residual-learning.pdf` | He et al. 2015 — many results tables, stresses the two number readers |
+| `bert.pdf` | Devlin et al. 2018 — long reference list, stresses citation matching at volume |
+
+**Clinical trials, from Europe PMC** — where the tool is strongest. Randomised trials cite journal articles with real DOIs, so source resolution, retraction checking and full text reading all actually fire.
+
+| File | Why it is here |
+| --- | --- |
+| `raynaud-botulinum-trial.pdf` | 127 KB — the cheapest end to end smoke test |
+| `alzheimers-electroacupuncture-trial.pdf` | effect sizes with confidence intervals |
+| `lumbar-microdiscectomy-trial.pdf` | explicit randomisation and blinding |
+| `parkinsons-acupuncture-trial.pdf` | multicentre, so the conflict finder has something to compare |
+
+Expect more `Source not found` verdicts on the arXiv papers. That is the reference style, not a fault: preprint bibliographies frequently omit DOIs, and a title match below 0.6 confidence is reported as not found rather than guessed at.
+
+---
+
 ## Documentation
 
-- [Architecture](docs/architecture.md) — how the 24 agents fit together, and what happens when things fail
+- [Architecture](docs/architecture.md) — how the 32 agents fit together, and what happens when things fail
 - [Setup](docs/setup.md) — Azure deployments, Supabase, first run
 - [Reproducibility](docs/reproducibility.md) — models, data sources, measured costs, known limits
