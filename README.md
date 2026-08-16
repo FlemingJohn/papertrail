@@ -79,7 +79,9 @@ That last one matters more than it looks. Roughly half of cited sources sit behi
 | Get told when a source is retracted | Never finding out |
 | Turn a methods section into a runnable protocol | Emailing the authors and waiting |
 
-**On a real run** — *Attention Is All You Need*, 15 pages, quick mode — it found 15 checkable claims, checked 10 citations, flagged 3 as unsupported and 2 whose sources it could not locate, and cross-checked 4 reported numbers across two blind readers. **$0.41, about ninety seconds.**
+**On a real run** — *Attention Is All You Need*, 15 pages, quick mode — it found 15 checkable claims, checked 10 citations, flagged 3 as unsupported and 2 whose sources it could not locate, and cross-checked 4 reported numbers across two blind readers. **$0.26, about ninety seconds.**
+
+**Measured accuracy: 11 of 12.** Twelve citations whose correct answer is established independently — real retractions, DOIs that resolve nowhere, claims lifted from a paper's own abstract, claims lifted from a different paper. Run it yourself with `npm run evaluate`; the whole set costs $0.14. The single miss returned `Could not check` rather than guessing, which is the behaviour the verdict vocabulary exists to make possible.
 
 ---
 

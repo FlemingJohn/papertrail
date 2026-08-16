@@ -61,11 +61,29 @@ The fingerprint deliberately excludes the narrative text and the agents' reasoni
 
 **Citation markers.** Numeric styles such as `[12]` and `12.` are matched reliably. Author-year styles are matched less reliably, and unmatched markers are counted and reported rather than quietly dropped.
 
-**No calibration study.** The verdicts have not been measured against a labelled set of known-good and known-bad citations. Agreement between the two number readers is reported and is a real measure, but the citation verdicts themselves carry no accuracy figure. Treat them as a prompt to look, not as a finding.
+**A small calibration set, not a validation.** Twelve cases is an indication, not proof. It covers four failure modes and says nothing about how the system behaves on citation styles, fields or languages outside them. Treat the verdicts as a prompt to look, not as a finding.
 
 **Figures.** Numbers that appear only inside a chart image are not extracted. Only text and tables are read.
 
 **English only.** The prompts and the reference parsing assume English.
+
+## Measured accuracy
+
+Twelve citation cases where the correct answer is established independently of this system: real retractions recorded by Crossref or OpenAlex, DOIs that resolve nowhere, claims taken verbatim from a paper's own abstract, and claims taken from a different paper entirely.
+
+Run it with `npm run evaluate`.
+
+| Case type | Correct | Ground truth comes from |
+| --- | --- | --- |
+| Retracted source | 3 of 3 | The retraction records themselves |
+| Fabricated source | 2 of 2 | The DOI resolves in no registry |
+| Genuine citation | 3 of 4 | The claim is the paper's own abstract |
+| Claim from another paper | 3 of 3 | Mismatched by construction |
+| **Total** | **11 of 12** | **$0.14 for the full set** |
+
+The one failure is the useful one. Asked to verify a claim against the BERT paper, the source text could not be retrieved, and the system returned `Could not check` rather than guessing. That is the designed behaviour: it declines to assert rather than asserting wrongly. It also shows the real ceiling — a citation whose source cannot be read cannot be verified, however obviously true the claim is.
+
+Building this set found a live defect. Retraction checking consulted only Crossref, whose `update-to` field does not record the 1998 Wakefield MMR retraction or the 2020 NEJM Surgisphere retraction. Both are recorded by OpenAlex. The check now consults both registries and reports which one carried the record; before that fix, two of the three most famous retractions in modern science passed as clean.
 
 ## Determinism
 
