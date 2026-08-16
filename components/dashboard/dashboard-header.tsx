@@ -10,11 +10,11 @@ import { buttonQuiet, microLabel } from "@/lib/design/tokens";
 import { Logo } from "@/components/logo";
 import { SpinnerIcon } from "./icons";
 
-interface HealthState {
-  model: boolean;
-  documentReader: boolean;
-  database: boolean;
-  note: string | null;
+interface AccountState {
+  modelName: string;
+  totalDollars: number | null;
+  runCount: number | null;
+  isStoring: boolean;
 }
 
 const pageNames: Record<string, string> = {
@@ -22,21 +22,19 @@ const pageNames: Record<string, string> = {
   "/history": "History",
   "/watchlist": "Watchlist",
   "/usage": "Usage",
-  "/agents": "Agents",
-  "/integrations": "Integrations",
 };
 
 export function DashboardHeader() {
   const pathname = usePathname();
   const { run } = useDashboard();
-  const [health, setHealth] = useState<HealthState | null>(null);
+  const [account, setAccount] = useState<AccountState | null>(null);
 
   useEffect(() => {
     async function load(): Promise<void> {
       try {
         const response = await fetch("/api/health");
         if (response.ok) {
-          setHealth((await response.json()) as HealthState);
+          setAccount((await response.json()) as AccountState);
         }
       } catch {
         return;
@@ -60,7 +58,7 @@ export function DashboardHeader() {
         </span>
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-6">
         {run.status === "running" ? (
           <span className="hidden items-center gap-2 md:flex">
             <SpinnerIcon className="size-3.5 animate-spin text-accent" />
@@ -68,19 +66,30 @@ export function DashboardHeader() {
           </span>
         ) : null}
 
-        {run.status === "idle" ? null : (
-          <motion.span
-            key={run.spendDollars}
-            initial={{ opacity: 0.6 }}
-            animate={{ opacity: 1 }}
-            className="font-display text-lg font-light"
-            title="Spend on the current run"
-          >
-            {formatDollars(run.spendDollars)}
-          </motion.span>
+        {account === null ? null : (
+          <span className="hidden items-center gap-2 lg:flex">
+            <span className="size-1.5 rounded-full bg-accent" />
+            <span className={microLabel}>{account.modelName}</span>
+          </span>
         )}
 
-        <ServiceLights health={health} />
+        {run.status === "idle" ? null : (
+          <Reading
+            label="This run"
+            value={formatDollars(run.spendDollars)}
+            isLive={run.status === "running"}
+          />
+        )}
+
+        {account === null || account.totalDollars === null ? null : (
+          <Reading
+            label={
+              account.runCount === 1 ? "1 run total" : `${account.runCount} runs total`
+            }
+            value={formatDollars(account.totalDollars)}
+            isLive={false}
+          />
+        )}
 
         <Link href="/check" className={`${buttonQuiet} hidden sm:inline-block`}>
           New check
@@ -90,50 +99,26 @@ export function DashboardHeader() {
   );
 }
 
-function ServiceLights({ health }: { health: HealthState | null }) {
-  if (health === null) {
-    return null;
-  }
-
-  const services: Array<{ label: string; isUp: boolean }> = [
-    { label: "Model", isUp: health.model },
-    { label: "Reader", isUp: health.documentReader },
-    { label: "Storage", isUp: health.database },
-  ];
-
-  const downCount = services.filter((service) => !service.isUp).length;
-
+function Reading({
+  label,
+  value,
+  isLive,
+}: {
+  label: string;
+  value: string;
+  isLive: boolean;
+}) {
   return (
-    <span
-      className="flex items-center gap-2.5"
-      title={
-        health.note ?? "Model, document reader and storage are all reachable."
-      }
-    >
-      {services.map((service) => (
-        <span key={service.label} className="flex items-center gap-1.5">
-          <span
-            className={`size-1.5 rounded-full ${
-              service.isUp ? "bg-verdict-supported" : "bg-verdict-wrong-source"
-            }`}
-          />
-          <span
-            className={`hidden font-mono text-[10px] uppercase tracking-widest lg:inline ${
-              service.isUp
-                ? "text-muted-foreground"
-                : "text-verdict-wrong-source"
-            }`}
-          >
-            {service.label}
-          </span>
-        </span>
-      ))}
-
-      {downCount > 0 ? (
-        <span className="font-mono text-[10px] uppercase tracking-widest text-verdict-wrong-source lg:hidden">
-          {downCount} down
-        </span>
-      ) : null}
+    <span className="hidden text-right sm:block">
+      <span className={`${microLabel} block leading-none`}>{label}</span>
+      <motion.span
+        key={value}
+        initial={isLive ? { opacity: 0.55 } : false}
+        animate={{ opacity: 1 }}
+        className="block font-display text-lg font-light leading-tight"
+      >
+        {value}
+      </motion.span>
     </span>
   );
 }
