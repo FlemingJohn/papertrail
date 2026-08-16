@@ -18,6 +18,7 @@ import {
 export interface DiscoveryInput {
   projectId: string;
   question: string;
+  field: string;
   paperTarget: number;
 }
 
@@ -44,6 +45,7 @@ export function runDiscovery(input: DiscoveryInput): AsyncGenerator<RunEvent> {
     const gathered = await gatherPapers({
       projectId: input.projectId,
       question: input.question,
+      field: input.field,
       paperTarget: input.paperTarget,
       writer: stream,
     });
@@ -84,7 +86,12 @@ export function runDiscovery(input: DiscoveryInput): AsyncGenerator<RunEvent> {
     const mapOutcome = await runAgent(evidenceMapper, {
       runIdentifier: input.projectId,
       subject: "these papers",
-      userPrompt: describePapers(input.question, gathered.papers, reports),
+      userPrompt: describePapers(
+        input.question,
+        input.field,
+        gathered.papers,
+        reports
+      ),
       writer: stream,
     });
 
@@ -132,6 +139,7 @@ export function runDiscovery(input: DiscoveryInput): AsyncGenerator<RunEvent> {
       subject: "this set of papers",
       userPrompt: [
         `Research question: ${input.question}`,
+        `Field: ${input.field}`,
         `Papers in this set: ${gathered.papers.length}${
           knowledgeBasePapers.length === 0
             ? ""
@@ -207,6 +215,7 @@ export function runDiscovery(input: DiscoveryInput): AsyncGenerator<RunEvent> {
 
 function describePapers(
   question: string,
+  field: string,
   papers: readonly GatheredPaper[],
   reports: readonly Report[]
 ): string {
@@ -219,6 +228,7 @@ function describePapers(
 
   return [
     `Research question: ${question}`,
+    `Field: ${field}`,
     "",
     "Papers:",
     papers
