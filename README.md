@@ -2,9 +2,9 @@
 
 # PaperTrail
 
-**Checks whether a research paper's citations, numbers and methods hold up — and tells you when that stops being true.**
+**Checks whether a research paper's citations, numbers and methods hold up — then takes your own question from a literature search to a draft you can defend.**
 
-Upload a PDF. Twenty-four specialists read it, follow every citation back to its source, read the reported numbers twice over independently, list what is missing from the method, compare the findings against related work, and produce a report where every conclusion traces back to a page and a quotation.
+Upload a PDF. Thirty-one specialists read it, follow every citation back to its source, read the reported numbers twice over independently, list what is missing from the method, compare the findings against related work, and produce a report where every conclusion traces back to a page and a quotation.
 
 Then it keeps watching, because evidence moves.
 
@@ -104,6 +104,8 @@ That last one matters more than it looks. Roughly half of cited sources sit behi
 | Extract meta-analysis data with an agreement score | Two people, several weeks |
 | Get told when a source is retracted | Never finding out |
 | Turn a methods section into a runnable protocol | Emailing the authors and waiting |
+| Find out an idea already exists, in an afternoon | Finding out in peer review, in a year |
+| Start a draft from sources that already passed checking | Assembling a bibliography by hand and hoping |
 
 **On a real run** — *Attention Is All You Need*, 15 pages, quick mode — it found 15 checkable claims, checked 10 citations, flagged 3 as unsupported and 2 whose sources it could not locate, and cross-checked 4 reported numbers across two blind readers. **$0.26, about ninety seconds.**
 
