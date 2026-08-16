@@ -88,6 +88,7 @@ export const runState = new StateSchema({
 
   tokensIn: new ReducedValue(z.number(), { reducer: addNumbers }),
   tokensOut: new ReducedValue(z.number(), { reducer: addNumbers }),
+  cachedTokensIn: new ReducedValue(z.number(), { reducer: addNumbers }),
   documentPagesRead: new ReducedValue(z.number(), { reducer: addNumbers }),
 });
 
@@ -130,6 +131,7 @@ export function buildInitialState(input: {
     limitations: [],
     tokensIn: 0,
     tokensOut: 0,
+    cachedTokensIn: 0,
     documentPagesRead: 0,
   };
 }

@@ -3,9 +3,16 @@ import type { Report } from "../schemas/report";
 import type { RunState } from "./state";
 import { calculateDocumentDollars, calculateModelDollars } from "../config/pricing";
 import { summariseToolCalls } from "../tools/tool-log";
+import { readUsage } from "../agents/usage-log";
 
 export function buildReport(state: RunState): Report {
   const toolSummary = summariseToolCalls(state.runIdentifier);
+  const measured = readUsage(state.runIdentifier);
+
+  const tokensIn = measured.tokensIn > 0 ? measured.tokensIn : state.tokensIn;
+  const tokensOut =
+    measured.tokensOut > 0 ? measured.tokensOut : state.tokensOut;
+  const cachedTokensIn = measured.cachedTokensIn;
 
   const uncheckableCitations = state.citationChecks.filter(
     (check) =>
@@ -49,10 +56,11 @@ export function buildReport(state: RunState): Report {
     narrative: state.narrative,
     spend: {
       totalDollars:
-        calculateModelDollars(state.tokensIn, state.tokensOut) +
+        calculateModelDollars(tokensIn, tokensOut, cachedTokensIn) +
         calculateDocumentDollars(state.documentPagesRead),
-      tokensIn: state.tokensIn,
-      tokensOut: state.tokensOut,
+      tokensIn,
+      tokensOut,
+      cachedTokensIn,
       documentPagesRead: state.documentPagesRead,
       toolCallCount: toolSummary.totalCalls,
       cacheHitCount: toolSummary.cacheHits,

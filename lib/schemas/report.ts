@@ -22,6 +22,7 @@ export const spendSummarySchema = z.object({
   totalDollars: z.number(),
   tokensIn: z.number().int().nonnegative(),
   tokensOut: z.number().int().nonnegative(),
+  cachedTokensIn: z.number().int().nonnegative(),
   documentPagesRead: z.number().int().nonnegative(),
   toolCallCount: z.number().int().nonnegative(),
   cacheHitCount: z.number().int().nonnegative(),
