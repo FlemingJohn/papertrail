@@ -4,67 +4,18 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  useDashboard,
-  type DashboardView,
-} from "@/lib/client/dashboard-context";
+import { useDashboard } from "@/lib/client/dashboard-context";
 import { formatDollars } from "@/lib/config/pricing";
-import { isProblemVerdict } from "@/lib/schemas/verdict";
 import { microLabel } from "@/lib/design/tokens";
-import {
-  ChartIcon,
-  CoinIcon,
-  DocumentIcon,
-  FlaskIcon,
-  LinkIcon,
-  ScaleIcon,
-  SearchIcon,
-  SpinnerIcon,
-  UploadIcon,
-} from "./icons";
+import { ScaleIcon, SpinnerIcon, UploadIcon } from "./icons";
 
-interface ReportItem {
-  view: DashboardView;
-  label: string;
-  icon: typeof LinkIcon;
-}
-
-const reportItems: ReportItem[] = [
-  { view: "summary", label: "Summary", icon: DocumentIcon },
-  { view: "citations", label: "Citations", icon: LinkIcon },
-  { view: "numbers", label: "Numbers", icon: ChartIcon },
-  { view: "methods", label: "Methods", icon: FlaskIcon },
-  { view: "conflicts", label: "Conflicts", icon: ScaleIcon },
-  { view: "review", label: "Review", icon: SearchIcon },
-  { view: "cost", label: "Cost", icon: CoinIcon },
-];
-
-const openWidth = "16rem";
+const openWidth = "15rem";
 
 const collapsedWidth = "4.5rem";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { run, activeView, setActiveView, hasReport, isSidebarOpen } =
-    useDashboard();
-
-  const isOnCheck = pathname === "/check";
-  const report = run.report;
-
-  const problemCount =
-    report === null
-      ? 0
-      : report.citationChecks.filter((check) =>
-          isProblemVerdict(check.judgement.verdict)
-        ).length;
-
-  const counts: Partial<Record<DashboardView, number>> = {
-    citations: report?.citationChecks.length ?? 0,
-    numbers: report?.measurements.length ?? 0,
-    methods: report?.missingDetails.length ?? 0,
-    conflicts: report?.conflicts.length ?? 0,
-    review: report?.review?.points.length ?? 0,
-  };
+  const { run, setActiveView, isSidebarOpen } = useDashboard();
 
   const progressPercentage = Math.round(
     (run.progress.completedStages / Math.max(run.progress.totalStages, 1)) * 100
@@ -76,74 +27,28 @@ export function Sidebar() {
       transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="sticky top-16 flex h-[calc(100vh-4rem)] shrink-0 flex-col overflow-hidden border-r border-white/10 py-6"
     >
-      <nav className="flex-1 space-y-7 overflow-y-auto overflow-x-hidden px-3">
-        <SidebarGroup label="Analyse" isSidebarOpen={isSidebarOpen}>
-          <SidebarLink
-            href="/check"
-            isActive={isOnCheck && activeView === "check"}
-            isSidebarOpen={isSidebarOpen}
-            onSelect={() => setActiveView("check")}
-            icon={<UploadIcon className="size-[18px]" />}
-            label="Check a paper"
-            trailing={
-              run.status === "running" ? (
-                <SpinnerIcon className="size-3.5 animate-spin text-accent" />
-              ) : null
-            }
-          />
-        </SidebarGroup>
+      <nav className="flex-1 space-y-1 overflow-hidden px-3">
+        <SidebarLink
+          href="/check"
+          isActive={pathname === "/check"}
+          isSidebarOpen={isSidebarOpen}
+          onSelect={() => setActiveView("check")}
+          icon={<UploadIcon className="size-[18px]" />}
+          label="Check a paper"
+          trailing={
+            run.status === "running" ? (
+              <SpinnerIcon className="size-3.5 animate-spin text-accent" />
+            ) : null
+          }
+        />
 
-        <SidebarGroup label="Report" isSidebarOpen={isSidebarOpen}>
-          {hasReport ? (
-            <ul className="space-y-0.5">
-              {reportItems.map((item) => {
-                const count = counts[item.view];
-                const isFlagged = item.view === "citations" && problemCount > 0;
-
-                return (
-                  <li key={item.view}>
-                    <SidebarLink
-                      href="/check"
-                      isActive={isOnCheck && activeView === item.view}
-                      isSidebarOpen={isSidebarOpen}
-                      onSelect={() => setActiveView(item.view)}
-                      icon={<item.icon className="size-[18px]" />}
-                      label={item.label}
-                      isFlagged={isFlagged}
-                      trailing={
-                        count === undefined || count === 0 ? null : (
-                          <span
-                            className={`font-mono text-[10px] ${
-                              isFlagged
-                                ? "text-verdict-wrong-source"
-                                : "text-muted-foreground"
-                            }`}
-                          >
-                            {isFlagged ? `${problemCount}!` : count}
-                          </span>
-                        )
-                      }
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          ) : isSidebarOpen ? (
-            <p className="px-3 text-xs leading-relaxed text-muted-foreground/50">
-              Check a paper and its findings appear here.
-            </p>
-          ) : null}
-        </SidebarGroup>
-
-        <SidebarGroup label="Monitor" isSidebarOpen={isSidebarOpen}>
-          <SidebarLink
-            href="/watchlist"
-            isActive={pathname === "/watchlist"}
-            isSidebarOpen={isSidebarOpen}
-            icon={<ScaleIcon className="size-[18px]" />}
-            label="Watchlist"
-          />
-        </SidebarGroup>
+        <SidebarLink
+          href="/watchlist"
+          isActive={pathname === "/watchlist"}
+          isSidebarOpen={isSidebarOpen}
+          icon={<ScaleIcon className="size-[18px]" />}
+          label="Watchlist"
+        />
       </nav>
 
       <div className="mt-6 border-t border-white/10 px-3 pt-5">
@@ -197,37 +102,6 @@ export function Sidebar() {
   );
 }
 
-function SidebarGroup({
-  label,
-  isSidebarOpen,
-  children,
-}: {
-  label: string;
-  isSidebarOpen: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <div>
-      <AnimatePresence initial={false}>
-        {isSidebarOpen ? (
-          <motion.p
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`${microLabel} mb-3 overflow-hidden px-3`}
-          >
-            {label}
-          </motion.p>
-        ) : (
-          <div className="mx-auto mb-3 h-px w-6 bg-white/10" />
-        )}
-      </AnimatePresence>
-      {children}
-    </div>
-  );
-}
-
 interface SidebarLinkProps {
   href: string;
   isActive: boolean;
@@ -235,7 +109,6 @@ interface SidebarLinkProps {
   label: string;
   icon: ReactNode;
   trailing?: ReactNode;
-  isFlagged?: boolean;
   onSelect?: () => void;
 }
 
@@ -246,7 +119,6 @@ function SidebarLink({
   label,
   icon,
   trailing,
-  isFlagged = false,
   onSelect,
 }: SidebarLinkProps) {
   return (
@@ -255,7 +127,7 @@ function SidebarLink({
       onClick={onSelect}
       title={isSidebarOpen ? undefined : label}
       aria-current={isActive ? "page" : undefined}
-      className={`relative flex h-10 items-center rounded-full text-sm transition-colors duration-200 ${
+      className={`flex h-11 items-center rounded-full text-sm transition-colors duration-200 ${
         isSidebarOpen ? "gap-3 px-3" : "justify-center"
       } ${
         isActive
@@ -281,10 +153,6 @@ function SidebarLink({
           </motion.span>
         ) : null}
       </AnimatePresence>
-
-      {!isSidebarOpen && isFlagged ? (
-        <span className="absolute right-3 top-2 size-1.5 rounded-full bg-verdict-wrong-source" />
-      ) : null}
     </Link>
   );
 }
