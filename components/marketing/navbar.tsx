@@ -39,11 +39,19 @@ export function Navbar() {
           ))}
 
           <Link
-            href="/check"
+            href="/sign-in"
+            data-cursor-hover
+            className="font-mono text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Sign in
+          </Link>
+
+          <Link
+            href="/sign-up"
             data-cursor-hover
             className="font-mono text-xs tracking-widest uppercase border border-white/20 rounded-full px-5 py-2 hover:bg-white hover:text-black transition-colors duration-300"
           >
-            Check a paper
+            Create an account
           </Link>
         </div>
 
@@ -80,10 +88,16 @@ export function Navbar() {
                 </a>
               ))}
               <Link
-                href="/check"
+                href="/sign-in"
+                className="font-mono text-xs tracking-widest uppercase text-muted-foreground"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-up"
                 className="font-mono text-xs tracking-widest uppercase border border-white/20 rounded-full px-5 py-2 text-center"
               >
-                Check a paper
+                Create an account
               </Link>
             </div>
           </motion.div>
