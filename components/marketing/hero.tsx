@@ -63,7 +63,7 @@ export function Hero() {
         >
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">02 — BACK TO ITS SOURCE</p>
           <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
-            TWENTY-FOUR
+            THIRTY-ONE
             <br />
             <span className="italic">SPECIALISTS</span>
           </h2>
