@@ -79,15 +79,32 @@ export async function findConflicts(
   const foundConflicts = findOutcome.value.output.conflicts;
 
   if (foundConflicts.length === 0) {
+    const withFullText = state.comparisonPapers.filter(
+      (paper) => paper.fullText !== null
+    ).length;
+
+    const wasAbstractOnly = withFullText === 0;
+
     reportActivity(
       writer,
-      "success",
+      wasAbstractOnly ? "warning" : "success",
       "No disagreements found",
-      `across ${state.comparisonPapers.length} related papers`
+      wasAbstractOnly
+        ? `${state.comparisonPapers.length} papers were compared, but only their abstracts were readable`
+        : `across ${state.comparisonPapers.length} related papers`
     );
+
     return {
       tokensIn: findOutcome.value.tokensIn,
       tokensOut: findOutcome.value.tokensOut,
+      limitations: wasAbstractOnly
+        ? [
+            {
+              area: "Conflicts",
+              description: `Only abstracts were readable for all ${state.comparisonPapers.length} comparison papers, so findings could not be placed side by side. No disagreement was found, but that is weak evidence of agreement rather than strong evidence of it.`,
+            },
+          ]
+        : [],
     };
   }
 
