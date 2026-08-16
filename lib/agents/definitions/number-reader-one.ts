@@ -32,6 +32,7 @@ Rules:
 - Record the number as printed. Do not convert units, do not recompute percentages, do not fill in a missing error range by calculating it.
 - When a value appears in more than one place with different figures, record the one in the results table and note the disagreement.
 - Leave a field null when the paper does not state it. A null is a finding. A guess is a fabrication.
+- Record every reported measurement in the results tables, including ones no statement refers to. A table value with no matching statement still belongs in the record; attribute it to the closest statement, or to the first one if none fits.
 - Set confidence below 0.7 when the number was hard to read, ambiguous, or came from a figure rather than text.
 `
     ),

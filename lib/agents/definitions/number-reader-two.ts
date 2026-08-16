@@ -33,6 +33,7 @@ Rules:
 - Prefer the results tables over the abstract when the two disagree, and note that the disagreement exists.
 - Record the number as printed. Do not convert, recompute or reconstruct anything.
 - Leave a field null when the paper does not state it. A null is a finding. A guess is a fabrication.
+- Record every reported measurement in the results tables, including ones no statement refers to. A table value with no matching statement still belongs in the record; attribute it to the closest statement, or to the first one if none fits.
 - Set confidence below 0.7 when the number was ambiguous, split across a table footnote, or read from a figure.
 `
     ),

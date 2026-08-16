@@ -36,7 +36,7 @@ export async function checkNumbers(
   }
 
   const findingClaims = state.claims.filter(
-    (claim) => claim.kind === "finding" || claim.kind === "conclusion"
+    (claim) => claim.kind !== "background"
   );
 
   if (findingClaims.length === 0) {
@@ -57,7 +57,7 @@ export async function checkNumbers(
   const readingPrompt = [
     `Paper title: ${state.paperTitle}`,
     "",
-    "Statements that report a result:",
+    "Statements that may carry a number:",
     describeClaims(findingClaims),
     "",
     "Blocks from the results and abstract:",
