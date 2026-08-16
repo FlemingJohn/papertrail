@@ -63,6 +63,32 @@ Three of these cannot be done honestly by a single reader.
 
 ---
 
+## From a question to a draft
+
+Checking a paper is one half. The other half starts from a question you have not answered yet.
+
+Give it a research question and it gathers the papers, drops the retracted ones before anything is read, maps what the set has already settled, and shows you where the openings are. Then it stops.
+
+**It stops three times, and each stop is a decision only a researcher can make.**
+
+| Gate | What you are shown | What you decide |
+| --- | --- | --- |
+| **After the gaps** | Every opening, marked *the papers say this* / *read across the papers* / *not backed by the papers* | Which openings are real |
+| **After the search for existing work** | Each proposal broken into the statements it depends on, plus the papers that already overlap with it | Which proposal to take forward, or none |
+| **After the plan** | The steps, what gets measured, and the single result that would prove it wrong | Whether this would actually test the idea |
+
+Only after the third approval does anything get written.
+
+**The novelty maker proposes; the prior art checker tries to kill it.** The checker is told to assume the work already exists and go looking for it. It reports the count of works it actually searched and the phrases it used, so `nothing found` reads as *these searches, on this database, today* — never as *this is new*. On the two runs behind this repo it refused to claim novelty on all four proposals and returned `close work exists` with 39 and 40 works searched.
+
+**A finding it already exists is a result, not a failure.** It costs an afternoon instead of a month.
+
+**The draft can only cite what survived checking.** The bibliography is assembled in code from sources that passed their citation check; the writer is handed that list and no other. Any key it invents anyway is stripped and replaced with a visible marker rather than left to look real. Every source kept out appears in the draft under *Limits of the search behind this draft*, with the reason.
+
+Figures and tables are described by agents as boxes, arrows and cells — never as markup. The TikZ and the SVG are drawn from that description in code, so a figure cannot contain a coordinate no agent chose. The draft exports as PDF through the browser's print view, and as `.tex` plus `verified.bib` for Overleaf.
+
+---
+
 ## What a researcher gets
 
 Every claim comes back with a verdict in plain words — no jargon, no scores to decode:
@@ -89,15 +115,25 @@ That last one matters more than it looks. Roughly half of cited sources sit behi
 
 | | Count |
 | --- | --- |
-| **AI agents** | **24**, one file each |
+| **AI agents** | **31**, one file each |
 | **Tools** | **18** — 7 external and document, 11 database |
 | Agent-callable tools | 6 (the rest are node-invoked only) |
 | **MCP servers** | **1**, exposing the 6 agent-callable tools over stdio |
 | Open data sources | 3 — OpenAlex, Crossref, Europe PMC |
 | Verdict states | 8 |
-| Pipeline stages | 9, four of them concurrent |
+| Pipeline stages | 9 for a check, four of them concurrent |
+| Human gates | 3, on the question-to-draft path |
 
-Sixteen of the 24 agents have **no tools at all**. They transform evidence handed to them. Giving a judge the ability to fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
+Twenty-two of the 31 agents have **no tools at all**. They transform evidence handed to them. Giving a judge the ability to fetch more evidence turns it into a fourth investigator, which is not what the stage needs.
+
+### Measured cost
+
+| | Cost |
+| --- | --- |
+| Checking one paper, standard depth | **$0.2584** |
+| A question taken all the way to a draft | **$0.1068** |
+
+The second figure is the sum of four real runs against live Azure: gathering and mapping six papers ($0.0149), two proposals with 79 works searched between them ($0.0599), the plan ($0.0059), and the draft with its figures, tables and bibliography ($0.0261).
 
 ---
 
